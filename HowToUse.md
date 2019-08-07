@@ -1,5 +1,8 @@
 ## Introduction
-此文件會教導您如何使用**RagnarokTW線上人數查詢**程式，內容與分享於巴哈姆特文章- [【密技】程式分享 - 查詢伺服器人數](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244)大致相同，僅以Markdown版本撰寫。
+此文件會教導您如何使用**RagnarokTW線上人數查詢**程式，內容與分享於巴哈姆特文章：
+ - [【密技】程式分享 - 查詢伺服器人數](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244)
+
+大致相同，僅以Markdown版本撰寫。
 
 ## How to use RagnarokTW線上人數查詢
 ### Step1. 下載程式
