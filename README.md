@@ -65,7 +65,7 @@ namespace RagnarokMonitor_sysinfo
         private string strAuthor = "Ren-Wei, Luo.";
         private string strContact = "http://naeilproj.blogspot.tw/";
 
-        /* following two servers is deprecated */
+        /* following two servers are deprecated */
         public ServerInfo UpdateSever = new ServerInfo("0.0.0.0", 25250);
         public ServerInfo CollectServer = new ServerInfo("52.197.221.106", 25245);
 
