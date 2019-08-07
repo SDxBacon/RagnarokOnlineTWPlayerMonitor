@@ -40,10 +40,7 @@ namespace RagnarokMonitor_metro
     {
         public static bool verifyServerInfo(byte[] data, int nRecv)
         {
-            /*
-             * CHANGE ME
-             */
-            if (data[0] == 0xdb && data[1] == 0x54)
+            if (data[0] == 0xdb && data[1] == 0x54)  // CHANGE ME
                 return true;
             else
                 return false;
@@ -68,8 +65,8 @@ namespace RagnarokMonitor_sysinfo
         /* following two servers is deprecated */
         public ServerInfo UpdateSever = new ServerInfo("0.0.0.0", 25250);
         public ServerInfo CollectServer = new ServerInfo("52.197.221.106", 25245);
-		/*
-			Taiwan Ragnarok Online Login Server IP address and port
+        /*
+         * Taiwan Ragnarok Online Login Server IP address and port
 		 */
         public ServerInfo RagnarokOfficialServer = new ServerInfo("219.84.200.54", 6900); // CHANGE ME
 
