@@ -5,6 +5,7 @@
 　　此專案主要是開源我在2016年分享於巴哈姆特的文章[【密技】程式分享 - 查詢伺服器人數](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244)
 ，此程式當前版本主要是透過監聽登入RO時，login server所回傳的各character server 名稱、IP與人數
 
+　　此外，由於本人已經鮮少遊玩台灣版RO，請恕我無法回答現在Server IP, port/ start bytes等資訊
 ![](https://imgur.com/sGb6qqS.png)
 ## Getting Started
 
@@ -102,6 +103,7 @@ namespace RagnarokMonitor_sysinfo
 * **SDxBacon** 
   - [LinkedIn](https://www.linkedin.com/in/renwei-luo-40207885/)
   - [Gmail](mailto:rock5566r@gmail.com)
+  - [巴哈姆特](https://home.gamer.com.tw/homeindex.php?owner=nancy820704)
 
 
 ## License
