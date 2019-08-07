@@ -1,18 +1,19 @@
-# Project Title
 
-One Paragraph of project description goes here
+# RagnarokOnlineTWPlayerMonitor
 
+此專案主要是開源我在2016年分享於巴哈姆特的文章[【密技】程式分享 - 查詢伺服器人數](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244)，此程式當前版本主要是透過監聽登入RO時，login server所回傳的各character server 名稱、IP與人數
+![](https://imgur.com/sGb6qqS.png)
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+> ***Warning***: 由於RO是運行於Windows下的遊戲，因此本專案是我唯一開發的C#程式，而且我僅使用一個晚上就擬定第一版大部分程式架構，並且第二版以使用metro修改UI為主。倘若您是專業的C#或是.Net開發人員，對於結構的鬆散請保持樂觀、開朗的心態面對，切勿影響自身安全。
+
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+- .NET framework 4.5.2以上的版本 - [Microsoft .NET](https://dotnet.microsoft.com/)
+- Visual Studio - [Microsoft Visual Studio](https://visualstudio.microsoft.com/zh-hant/?rr=https%3A%2F%2Fwww.google.com%2F)
 
-```
-Give examples
-```
 
 ### Installing
 
