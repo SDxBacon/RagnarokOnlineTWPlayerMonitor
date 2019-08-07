@@ -1,4 +1,5 @@
 
+
 # RagnarokOnlineTWPlayerMonitor
 
 　　此專案主要是開源我在2016年分享於巴哈姆特的文章[【密技】程式分享 - 查詢伺服器人數](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244)
@@ -7,9 +8,8 @@
 ![](https://imgur.com/sGb6qqS.png)
 ## Getting Started
 
-如果您是一般使用者，請參考....
+此Readme是目標給開發人員參考，如果您是一般使用者，請參考....
 
-若您是開發人員，再往下看
 > ***Warning***: 由於RO是運行於Windows下的遊戲，因此本專案是我唯一開發的C#程式，而且我僅使用一個晚上就擬定第一版大部分程式架構，並且第二版以使用metro修改UI為主。倘若您是專業的C#或是.Net開發人員，對於結構的鬆散請保持樂觀、開朗的心態面對，切勿影響自身安全。
 
 
@@ -27,6 +27,57 @@
 git clone https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor.git
 ```
 2. **用Visual Studio打開RagnarokMonitor_metro.sln**
+
+## Codes that you will need to change
+#### packet start bytes- file `RagnarokMonitor_metro\ragnarokPacket.cs`
+如果官方修改封包start bytes，請修改以下部分。
+```c#
+namespace RagnarokMonitor_metro
+{
+    ...
+
+    class ragnarokPacket
+    {
+        public static bool verifyServerInfo(byte[] data, int nRecv)
+        {
+            /*
+             * CHANGE ME
+             */
+            if (data[0] == 0xdb && data[1] == 0x54)
+                return true;
+            else
+                return false;
+        }
+        ...
+    }
+}
+```
+
+#### Login server IP - file `RagnarokMonitor_sysinfo\sysinfo.cs`
+如果官方修改Login server IP & port，請修改以下部分。
+```c#
+namespace RagnarokMonitor_sysinfo
+{
+    public class sysinfo
+    {
+        private int intVersion = 213;
+        private string strVersion = "v2.1.4";
+        private string strReleaseDate = "2019/06/15";
+        private string strAuthor = "Ren-Wei, Luo.";
+        private string strContact = "http://naeilproj.blogspot.tw/";
+        /* following two servers is deprecated */
+        public ServerInfo UpdateSever = new ServerInfo("0.0.0.0", 25250);
+        public ServerInfo CollectServer = new ServerInfo("52.197.221.106", 25245);
+		/*
+			Taiwan Ragnarok Online Login Server IP address and port
+		 */
+        public ServerInfo RagnarokOfficialServer = new ServerInfo("219.84.200.54", 6900); // CHANGE ME
+
+        ...
+    }
+
+}
+```
 
 ## Versioning
 #### 2018/10/16 -- v2.1.3
@@ -50,7 +101,7 @@ git clone https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor.git
 ## Authors
 
 * **SDxBacon** 
-  - [LinkedIn]([https://www.linkedin.com/in/renwei-luo-40207885/](https://www.linkedin.com/in/renwei-luo-40207885/))
+  - [LinkedIn](https://www.linkedin.com/in/renwei-luo-40207885/)
   - [Gmail](mailto:rock5566r@gmail.com)
 
 
