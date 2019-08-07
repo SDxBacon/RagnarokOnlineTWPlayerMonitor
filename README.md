@@ -10,7 +10,7 @@
 
 此Readme是目標給開發人員參考，如果您是一般使用者，請參考下列步驟：
 1. 下載Release版程式 - [Google drive](http://ref.gamer.com.tw/redir.php?url=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F0B-_O7A9rVgxsVjZIWm94aVZId3M%2Fview%3Fusp%3Dsharing) / [Github Release page](https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor/releases/tag/2.1.4)
-2. 閱讀使用說明 - [巴哈姆特](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244)
+2. 閱讀使用說明 - [巴哈姆特](https://forum.gamer.com.tw/Co.php?bsn=04212&sn=2733244) / [How To Use](HowToUse.md)
 
 > ***Warning***: 由於RO是運行於Windows下的遊戲，因此本專案是我唯一開發的C#程式，而且我僅使用一個晚上就擬定第一版大部分程式架構，並且第二版以使用metro修改UI為主。倘若您是專業的C#或是.Net開發人員，對於結構的鬆散請保持樂觀、開朗的心態面對，切勿影響自身安全。
 
