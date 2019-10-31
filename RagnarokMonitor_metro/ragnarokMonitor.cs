@@ -68,12 +68,13 @@ namespace RagnarokMonitor_metro
 
         private void ParseData(byte[] byteData, int nRecv)
         {
+            if (nRecv <= 0) return;
 
             // parse IP Header & payload.
             IPHeader ipHeader = new IPHeader(byteData, nRecv);
 
             // parse Tcp Header & payload.
-            if (ipHeader.ProtocolType == Protocol.TCP)
+            if (ipHeader.ProtocolType == Protocol.TCP && ipHeader.MessageLength > 0)
             {
                 TCPHeader tcpHeader = new TCPHeader(ipHeader.Data, ipHeader.MessageLength);
                 Console.WriteLine("TCP packet incoming... IP:"+ ipHeader.SourceAddress.ToString()+", source port:"+ tcpHeader.SourcePort);
