@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RagnarokMonitor_metro
 {
     class ragnarokMonitor
     {
-        
         private bool onListen = false;
         private byte[] byteData = new byte[4096];
         private Socket socket;
@@ -45,12 +46,15 @@ namespace RagnarokMonitor_metro
                     int nRecv = socket.Receive(byteData, 0, byteData.Length, SocketFlags.None);
                     // parse data from raw socket.
                     ParseData(byteData, nRecv);
-
                 }
                 catch (Win32Exception w32e)
                 {
                     if ( w32e.ErrorCode != 10060 )
                         Console.WriteLine("Error in _interListen:" + w32e.ErrorCode);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("monitor_recv_runtime", exception);
                 }
 
             }
@@ -146,7 +150,6 @@ namespace RagnarokMonitor_metro
             {
                 /*Setup threadListen.*/
                 rawsocket_worker = new Thread(monitor_recv_runtime);
-
                 rawsocket_worker.Start();
             }
         }

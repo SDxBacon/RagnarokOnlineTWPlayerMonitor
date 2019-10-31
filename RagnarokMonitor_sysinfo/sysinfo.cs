@@ -9,8 +9,8 @@ namespace RagnarokMonitor_sysinfo
     public class sysinfo
     {
         private int intVersion = 213;
-        private string strVersion = "v2.1.4";
-        private string strReleaseDate = "2019/06/15";
+        private string strVersion = "v2.1.5";
+        private string strReleaseDate = "2019/11/01";
         private string strAuthor = "Ren-Wei, Luo.";
         private string strContact = "http://naeilproj.blogspot.tw/";
         public ServerInfo UpdateSever = new ServerInfo("0.0.0.0", 25250);

@@ -319,7 +319,7 @@
             this.metroLabel6.Name = "metroLabel6";
             this.metroLabel6.Size = new System.Drawing.Size(106, 25);
             this.metroLabel6.TabIndex = 19;
-            this.metroLabel6.Text = "2019/06/15";
+            this.metroLabel6.Text = "2019/11/1";
             // 
             // metroLabel5
             // 

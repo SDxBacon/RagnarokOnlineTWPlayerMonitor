@@ -8,6 +8,7 @@ using MetroFramework;
 using MetroFramework.Drawing;
 using RagnarokMonitor_sysinfo;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Principal;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ namespace RagnarokMonitor_metro
 {
     public partial class MainForm : MetroForm
     {
-        private Quobject.SocketIoClientDotNet.Client.Socket UploadSocket;
+        private string[] NetworkAdapterWhitelist = { "Ethernet" };
         private sysinfo sysinfo = new sysinfo();
         private ragnarokMonitor monitor;
         private bool onListenFlag = false;
@@ -45,6 +46,44 @@ namespace RagnarokMonitor_metro
         }
 
         #region Mainform initialize methods region.
+        private void checkTargetIP(string targetIP)
+        {
+            IPAddress address;
+            if (!IPAddress.TryParse(metro_TargetIP_TextBox.Text, out address))
+            {
+                throw new Exception("您輸入的目標IP位址有錯誤，請重新輸入。");
+            }
+
+            //check IPv4
+            if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                throw new Exception("您輸入的目標IP位址不屬於IPv4，請重新輸入。");
+            }
+        }
+
+        private void checkNetworkInterfaceTypeSupport(string addressInput)
+        {
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();   //取得所有網路介面類別(封裝本機網路資料)
+            foreach (NetworkInterface adapter in nics)
+            {
+                string adapterType = adapter.NetworkInterfaceType.ToString();
+                foreach (UnicastIPAddressInformation ip in adapter.GetIPProperties().UnicastAddresses)
+                {
+                    if (
+                        ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
+                        && addressInput == ip.Address.ToString()
+                    ) {
+                        if (Array.Exists(NetworkAdapterWhitelist, type => type == adapterType))
+                        {
+                            return;
+                        }
+                        throw new Exception($"網路介面卡網路型態不支援。該網路介面卡網路型態為: {adapterType}，目前僅支援: {String.Join(",", NetworkAdapterWhitelist)}");
+                    }
+                }    
+            }
+            throw new Exception($"網路介面卡網路型態檢查失敗。");
+        }
+
         private bool IsUserAdministrator()
         {
             //bool value to hold our return value
@@ -208,33 +247,6 @@ namespace RagnarokMonitor_metro
         {
             return nwInterfaceList.Text;
         }
-
-        private void uploadResult_Service()
-        {
-            string uploadServer_IP, uploadServer_Port;
-
-            /* check upload server info.*/
-            if (sysinfo.CollectServer == null)
-                return;
-
-            uploadServer_IP = sysinfo.CollectServer.IP;
-            uploadServer_Port = sysinfo.CollectServer.Port.ToString();
-
-            /* Socket.IO*/
-            UploadSocket = IO.Socket("http://" + uploadServer_IP + ":" + uploadServer_Port);
-            UploadSocket.On(Quobject.SocketIoClientDotNet.Client.Socket.EVENT_CONNECT, () =>
-            {
-                UploadSocket.Emit("UploadMonitorResult", JsonConvert.SerializeObject(_getDataGridView_List()));
-
-            });
-
-            UploadSocket.On("UploadSuccess", (data) =>
-            {
-                Console.WriteLine("Socket.IO Event:CollectSuccess, data:" + data);
-                UploadSocket.Disconnect();
-                UploadSocket = null;
-            });
-        }
    
         private void StyleGrid(MetroThemeStyle theme, MetroColorStyle style)
         {
@@ -313,31 +325,26 @@ namespace RagnarokMonitor_metro
 
         private void metroButton_start_Click(object sender, EventArgs e)
         {
-            if (nwInterfaceList.SelectedIndex == -1)
-            {
-                MetroMessageBox.Show(this, "請正確選擇一個網路介面卡後，再嘗試開啟監控。", "Oops!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             /* Haven't start monitoring. */           
             if ( !onListenFlag )
             {
-                /* check Target IP.*/
-                //check parse success or not.
-                IPAddress address;
-                if ( !IPAddress.TryParse(metro_TargetIP_TextBox.Text, out address) ) 
+                if (nwInterfaceList.SelectedIndex == -1)
                 {
-                    
-                    MetroMessageBox.Show(this, "您輸入的目標IP位址有錯誤，請重新輸入。", "Oops!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MetroMessageBox.Show(this, "請正確選擇一個網路介面卡後，再嘗試開啟監控。", "Oops!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                //check IPv4
-                if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
-                {              
-                    MetroMessageBox.Show(this, "您輸入的目標IP位址不屬於IPv4，請重新輸入。", "Oops!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    checkTargetIP(metro_TargetIP_TextBox.Text); // check target ip
+                    checkNetworkInterfaceTypeSupport(getNetworkInterfaceText()); // check networkinterface type
+                }
+                catch (Exception error)
+                {
+                    MetroMessageBox.Show(this, error.Message, "Oops!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 // initial ragnarok monitor.
                 monitor = new ragnarokMonitor(this, metro_TargetIP_TextBox.Text, sysinfo.RagnarokOfficialServer.Port);
 
@@ -348,8 +355,7 @@ namespace RagnarokMonitor_metro
                     metroButton_start.Text = "Stop";
                     monitor.Run();
                     onListenFlag = true;
-                }
-                
+                }    
             }
             /* Monitoring.*/           
             else
@@ -451,6 +457,11 @@ namespace RagnarokMonitor_metro
         }
 
         private void metroLabel5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void metroLabel6_Click(object sender, EventArgs e)
         {
 
         }
