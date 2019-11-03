@@ -8,7 +8,7 @@
 ### Step1. 下載程式
 請至以下連結下載，擇一即可：
 - [Google drive](https://ref.gamer.com.tw/redir.php?url=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F0B-_O7A9rVgxsVjZIWm94aVZId3M%2Fview%3Fusp%3Dsharing)  
-- [Github Release](https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor/releases/tag/2.1.4)
+- [Github Release](https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor/releases/latest)
   
 您必須擁有 .NET framework 4.5.2以上的版本，如果沒有的人請去MSDN下載:
 - [MSDN](https://docs.microsoft.com/zh-tw/dotnet/framework/install/guide-for-developers)
