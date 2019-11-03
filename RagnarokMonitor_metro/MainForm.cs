@@ -8,12 +8,8 @@ using MetroFramework;
 using MetroFramework.Drawing;
 using RagnarokMonitor_sysinfo;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Principal;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Quobject.SocketIoClientDotNet.Client;
 
 namespace RagnarokMonitor_metro
 {
@@ -164,6 +160,7 @@ namespace RagnarokMonitor_metro
             metroLabel_author.Text = sysinfo.Author;
             metroLabel_releasedate.Text = sysinfo.ReleaseDate;
             metroLabel_contact.Text = sysinfo.Contact;
+            metroLabel6.Text = sysinfo.ReleaseDate;
         }
 
         #endregion

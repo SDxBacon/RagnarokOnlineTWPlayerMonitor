@@ -3,24 +3,14 @@ using SharpPcap;
 using SharpPcap.LibPcap;
 using SharpPcap.WinPcap;
 using PacketDotNet;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace RagnarokMonitor_metro
 {
     class ragnarokMonitor
     {
         private bool onListen = false;
-        private byte[] byteData = new byte[4096];
         private Thread rawsocket_worker;
         private MainForm mainform;
 
@@ -68,17 +58,17 @@ namespace RagnarokMonitor_metro
                     TcpPacket tcp = parsedPacket.Extract<TcpPacket>();
                     if (tcp != null)
                     {
-                        Console.WriteLine($"hasPayloadData: {tcp.HasPayloadData}");
                         if (tcp.HasPayloadData && tcp.PayloadData.Length > 0)
                         {
                             bool isROServerInfoPacket = ragnarokPacket.verifyServerInfo(tcp.PayloadData, tcp.PayloadData.Length);
                             if (isROServerInfoPacket)
                             {
+                                onListen = false;
                                 handleServerInfo(tcp);
+                                mainform.Invoke(mainform.notifyMonitorFinish_Var);
                             }
                         }
                         
-                        Console.WriteLine(tcp.ToString());
                     }
                     
                 }
@@ -151,15 +141,18 @@ namespace RagnarokMonitor_metro
 
         private void stopMonitoring()
         {
-            int timeout = 200;
+            int timeout = 50;
             onListen = false;
 
             bool isTerminated;
-            do
+            if (rawsocket_worker.IsAlive)
             {
-                isTerminated = rawsocket_worker.Join(timeout);
-            } while (!isTerminated);
-            
+                do
+                {
+                    isTerminated = rawsocket_worker.Join(timeout);
+                } while (!isTerminated);
+            }
+           
             /**/
             mainform.Invoke(mainform.notifyMonitorFinish_Var);
         }
