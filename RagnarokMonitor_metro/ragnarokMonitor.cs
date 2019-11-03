@@ -21,7 +21,6 @@ namespace RagnarokMonitor_metro
     {
         private bool onListen = false;
         private byte[] byteData = new byte[4096];
-        private Socket socket;
         private Thread rawsocket_worker;
         private MainForm mainform;
 

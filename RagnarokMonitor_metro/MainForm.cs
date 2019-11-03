@@ -61,29 +61,6 @@ namespace RagnarokMonitor_metro
             }
         }
 
-        private void checkNetworkInterfaceTypeSupport(string addressInput)
-        {
-            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();   //取得所有網路介面類別(封裝本機網路資料)
-            foreach (NetworkInterface adapter in nics)
-            {
-                string adapterType = adapter.NetworkInterfaceType.ToString();
-                foreach (UnicastIPAddressInformation ip in adapter.GetIPProperties().UnicastAddresses)
-                {
-                    if (
-                        ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
-                        && addressInput == ip.Address.ToString()
-                    ) {
-                        if (Array.Exists(NetworkAdapterWhitelist, type => type == adapterType))
-                        {
-                            return;
-                        }
-                        throw new Exception($"網路介面卡網路型態不支援。該網路介面卡網路型態為: {adapterType}，目前僅支援: {String.Join(",", NetworkAdapterWhitelist)}");
-                    }
-                }    
-            }
-            throw new Exception("網路介面卡網路型態檢查失敗。");
-        }
-
         private bool IsUserAdministrator()
         {
             //bool value to hold our return value
@@ -328,16 +305,11 @@ namespace RagnarokMonitor_metro
             /* Haven't start monitoring. */           
             if ( !onListenFlag )
             {
-                if (nwInterfaceList.SelectedIndex == -1)
-                {
-                    MetroMessageBox.Show(this, "請正確選擇一個網路介面卡後，再嘗試開啟監控。", "Oops!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
                 try
                 {
+                    if (nwInterfaceList.SelectedIndex == -1)
+                        throw new Exception("請先選擇一個網路介面卡，接著再運行監控功能。");
                     checkTargetIP(metro_TargetIP_TextBox.Text); // check target ip
-                    checkNetworkInterfaceTypeSupport(getNetworkInterfaceText()); // check networkinterface type
                 }
                 catch (Exception error)
                 {
