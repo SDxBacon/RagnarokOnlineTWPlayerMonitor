@@ -51,7 +51,6 @@ namespace RagnarokMonitor_metro
 
             string filter = $"tcp and host {target_ip}";
             selectedWinPcapDevice.Filter = filter;
-            Console.WriteLine($"filter: {filter}");
 
             // Capture packets using GetNextPacket()
             while (onListen)
@@ -88,13 +87,7 @@ namespace RagnarokMonitor_metro
                 Console.WriteLine(parsedPacket.ToString());
             }
 
-
             selectedWinPcapDevice.Close();
-            /* clean threadListen. */
-            rawsocket_worker = null;
-
-            /**/
-            mainform.Invoke(mainform.notifyMonitorFinish_Var);
         }
 
         private void handleServerInfo(TcpPacket packet)
@@ -159,7 +152,17 @@ namespace RagnarokMonitor_metro
 
         private void stopMonitoring()
         {
+            int timeout = 200;
             onListen = false;
+
+            bool isTerminated;
+            do
+            {
+                isTerminated = rawsocket_worker.Join(timeout);
+            } while (!isTerminated);
+            
+            /**/
+            mainform.Invoke(mainform.notifyMonitorFinish_Var);
         }
 
         public void Run()
