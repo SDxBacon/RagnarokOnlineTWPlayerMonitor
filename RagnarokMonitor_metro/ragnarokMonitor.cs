@@ -1,5 +1,10 @@
 ﻿using System;
+using SharpPcap;
+using SharpPcap.LibPcap;
+using SharpPcap.WinPcap;
+using PacketDotNet;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
@@ -22,6 +27,7 @@ namespace RagnarokMonitor_metro
 
         private string target_ip;
         private string target_port;
+        private WinPcapDevice selectedWinPcapDevice;
         
         public ragnarokMonitor(MainForm mf)
         {
@@ -39,30 +45,51 @@ namespace RagnarokMonitor_metro
 
         private void monitor_recv_runtime()
         {
+            //Open the device for capturing
+            int readTimeoutMilliseconds = 1000;
+            selectedWinPcapDevice.Open(DeviceMode.Promiscuous, readTimeoutMilliseconds);
+
+            string filter = $"tcp and host {target_ip}";
+            selectedWinPcapDevice.Filter = filter;
+            Console.WriteLine($"filter: {filter}");
+
+            // Capture packets using GetNextPacket()
             while (onListen)
             {
-                try
+                RawCapture rawCapture = selectedWinPcapDevice.GetNextPacket();
+                if (rawCapture == null)
                 {
-                    int nRecv = socket.Receive(byteData, 0, byteData.Length, SocketFlags.None);
-                    // parse data from raw socket.
-                    ParseData(byteData, nRecv);
-                }
-                catch (Win32Exception w32e)
-                {
-                    if ( w32e.ErrorCode != 10060 )
-                        Console.WriteLine("Error in _interListen:" + w32e.ErrorCode);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine("monitor_recv_runtime", exception);
+                    continue;
                 }
 
+                // use PacketDotNet to parse this packet and print out
+                // its high level information
+                Packet parsedPacket = Packet.ParsePacket(rawCapture.LinkLayerType, rawCapture.Data);
+                if (parsedPacket.HasPayloadPacket)
+                {
+                    TcpPacket tcp = parsedPacket.Extract<TcpPacket>();
+                    if (tcp != null)
+                    {
+                        Console.WriteLine($"hasPayloadData: {tcp.HasPayloadData}");
+                        if (tcp.HasPayloadData && tcp.PayloadData.Length > 0)
+                        {
+                            bool isROServerInfoPacket = ragnarokPacket.verifyServerInfo(tcp.PayloadData, tcp.PayloadData.Length);
+                            if (isROServerInfoPacket)
+                            {
+                                handleServerInfo(tcp);
+                            }
+                        }
+                        
+                        Console.WriteLine(tcp.ToString());
+                    }
+                    
+                }
+
+                Console.WriteLine(parsedPacket.ToString());
             }
 
-            /*free socket*/
-            socket.Close();
-            socket = null;
 
+            selectedWinPcapDevice.Close();
             /* clean threadListen. */
             rawsocket_worker = null;
 
@@ -70,43 +97,15 @@ namespace RagnarokMonitor_metro
             mainform.Invoke(mainform.notifyMonitorFinish_Var);
         }
 
-        private void ParseData(byte[] byteData, int nRecv)
-        {
-            if (nRecv <= 0) return;
-
-            // parse IP Header & payload.
-            IPHeader ipHeader = new IPHeader(byteData, nRecv);
-
-            // parse Tcp Header & payload.
-            if (ipHeader.ProtocolType == Protocol.TCP && ipHeader.MessageLength > 0)
-            {
-                TCPHeader tcpHeader = new TCPHeader(ipHeader.Data, ipHeader.MessageLength);
-                Console.WriteLine("TCP packet incoming... IP:"+ ipHeader.SourceAddress.ToString()+", source port:"+ tcpHeader.SourcePort);
-
-                if (ipHeader.SourceAddress.ToString() == target_ip
-                    && tcpHeader.SourcePort == target_port)
-                    Console.WriteLine("OH!!! you should look at it.");
-
-                if (ipHeader.SourceAddress.ToString() == target_ip
-                    && tcpHeader.SourcePort == target_port
-                    && ragnarokPacket.verifyServerInfo(tcpHeader.Data, tcpHeader.MessageLength))
-                {
-                    Console.WriteLine("Server information packet received.");
-                    mainform.Invoke(mainform.clearDataGridView_Var); // clear metroGrid.
-                    handleServerInfo(tcpHeader); // handle server information packet.
-                    mainform.Invoke(mainform.uploadMonitorResult_callback_Var);// check if need to upload monitor result to server.
-                }
-            }
-
-        }
-
-        private void handleServerInfo(TCPHeader tcpHeader)
+        private void handleServerInfo(TcpPacket packet)
         {
             int infoSetsNumber = 0,
                 infoOffset = 32;
 
             // Calculating how many server information sets do we received from server.
-            infoSetsNumber = ragnarokPacket.getServerInfoSetsNumber(tcpHeader.MessageLength);
+            infoSetsNumber = ragnarokPacket.getServerInfoSetsNumber(packet.PayloadData.Length);
+
+            byte[] payloadData = packet.PayloadData;
 
             try
             {
@@ -115,12 +114,12 @@ namespace RagnarokMonitor_metro
                     int port, playerCount;
                     byte[] byteServerName = new byte[20];
                     string IP, strServerName;
-                    IP = tcpHeader.Data[0 + i * infoOffset].ToString() + "." + tcpHeader.Data[1 + i * infoOffset].ToString() + "." +
-                         tcpHeader.Data[2 + i * infoOffset].ToString() + "." + tcpHeader.Data[3 + i * infoOffset].ToString();
-                    port = (tcpHeader.Data[5 + i * infoOffset] << 8) + tcpHeader.Data[4 + i * infoOffset];
-                    playerCount = (tcpHeader.Data[27 + i * infoOffset] << 8) + tcpHeader.Data[26 + i * infoOffset];
+                    IP = payloadData[0 + i * infoOffset].ToString() + "." + payloadData[1 + i * infoOffset].ToString() + "." +
+                         payloadData[2 + i * infoOffset].ToString() + "." + payloadData[3 + i * infoOffset].ToString();
+                    port = (payloadData[5 + i * infoOffset] << 8) + payloadData[4 + i * infoOffset];
+                    playerCount = (payloadData[27 + i * infoOffset] << 8) + payloadData[26 + i * infoOffset];
 
-                    Array.Copy(tcpHeader.Data, 6 + i * infoOffset, byteServerName, 0, 20);
+                    Array.Copy(payloadData, 6 + i * infoOffset, byteServerName, 0, 20);
                     strServerName = System.Text.Encoding.GetEncoding("big5").GetString(byteServerName, 0, 20).Replace("\0", string.Empty);
 
                     mainform.Invoke(mainform.updateDataGridView_Var, strServerName, IP, port.ToString(), playerCount.ToString());
@@ -143,22 +142,24 @@ namespace RagnarokMonitor_metro
         {
             onListen = true;
 
-            /* setup raw socket*/
-            setSocket(mainform.getNetworkInterfaceText());
-
-            if (socket != null)
+            /* setup tWinPcapDevice */
+            WinPcapDevice wpDevice = getWinPcapDeviceByIP(mainform.getNetworkInterfaceText());
+            if (wpDevice == null)
             {
-                /*Setup threadListen.*/
-                rawsocket_worker = new Thread(monitor_recv_runtime);
-                rawsocket_worker.Start();
+                stopMonitoring();
+                return;
             }
+
+            selectedWinPcapDevice = wpDevice;
+
+            rawsocket_worker = new Thread(monitor_recv_runtime);
+            rawsocket_worker.Start();
         }
 
 
         private void stopMonitoring()
         {
             onListen = false;
-            rawsocket_worker.Abort();
         }
 
         public void Run()
@@ -170,50 +171,31 @@ namespace RagnarokMonitor_metro
             
         }
 
-        private void setSocket(string ip)
+        private WinPcapDevice getWinPcapDeviceByIP(string ip)
         {
-            try
-            {
-                /* Setup raw socket*/
-                socket = new Socket(AddressFamily.InterNetwork,
-                    SocketType.Raw, ProtocolType.IP);
+            // Retrieve the device list
+            var devices = WinPcapDeviceList.Instance;
 
-                socket.Bind(new IPEndPoint(IPAddress.Parse(ip), 0));
-
-                socket.SetSocketOption(SocketOptionLevel.IP,            //Applies only to IP packets
-                                           SocketOptionName.HeaderIncluded, //Set the include the header
-                                           true);                           //option to true
-
-                byte[] byTrue = BitConverter.GetBytes(1);
-                byte[] byOut = new byte[4]; //Capture outgoing packets            
-
-                //Socket.IOControl is analogous to the WSAIoctl method of Winsock 2
-                socket.IOControl(IOControlCode.ReceiveAll,              //Equivalent to SIO_RCVALL constant of Winsock 2
-                                 byTrue,
-                                 byOut);
-
-                socket.ReceiveTimeout = 1000;
-            }
-            catch(SocketException e)
+            // If no devices were found print an error
+            if (devices.Count < 1)
             {
-                Console.WriteLine("setSocket SocketException error:" + e);
-                throw;
+                Console.WriteLine("No devices were found on this machine");
+                return null;
             }
-            catch(ObjectDisposedException e)
+
+            // Find WinPcapDevice that contains input IP address 
+            foreach (WinPcapDevice device in devices)
             {
-                Console.WriteLine("setSocket ObjectDisposedException error:" + e);
-                throw;
+                ReadOnlyCollection<PcapAddress> addresses = device.Addresses;
+                foreach (var pcapAddr in addresses)
+                {
+                    Sockaddr addr = pcapAddr.Addr;
+                    if (addr.ToString() == ip)
+                        return device;
+                }
             }
-            catch (InvalidOperationException e)
-            {
-                Console.WriteLine("setSocket InvalidOperationException error:" + e);
-                throw;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("setSocket Exception error:" + e);
-                throw;
-            }
+
+            return null;
         }
     }
 }

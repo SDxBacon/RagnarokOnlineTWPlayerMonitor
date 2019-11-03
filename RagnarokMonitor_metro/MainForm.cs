@@ -81,7 +81,7 @@ namespace RagnarokMonitor_metro
                     }
                 }    
             }
-            throw new Exception($"網路介面卡網路型態檢查失敗。");
+            throw new Exception("網路介面卡網路型態檢查失敗。");
         }
 
         private bool IsUserAdministrator()
