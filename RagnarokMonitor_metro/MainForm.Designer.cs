@@ -331,7 +331,7 @@
             this.metroLabel5.Name = "metroLabel5";
             this.metroLabel5.Size = new System.Drawing.Size(370, 25);
             this.metroLabel5.TabIndex = 18;
-            this.metroLabel5.Text = "一般: 219.84.200.54 / 起源: 219.84.200.162";
+            this.metroLabel5.Text = "219.84.200.54";
             this.metroLabel5.Click += new System.EventHandler(this.metroLabel5_Click);
             // 
             // metro_TargetIP_TextBox
