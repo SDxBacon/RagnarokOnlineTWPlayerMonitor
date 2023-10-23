@@ -3,11 +3,11 @@ namespace RagnarokMonitor_sysinfo
 {
     public class sysinfo
     {
-        private int intVersion = 217;
-        private string strVersion = "v2.1.7";
-        private string strReleaseDate = "2020/02/24";
+        private int intVersion = 218;
+        private string strVersion = "v2.1.8";
+        private string strReleaseDate = "2023/10/23";
         private string strAuthor = "Ren-Wei, Luo.";
-        private string strContact = "http://naeilproj.blogspot.tw/";
+        private string strContact = "https://www.linkedin.com/in/renweiluo/";
         public ServerInfo UpdateSever = new ServerInfo("0.0.0.0", 25250);
         public ServerInfo CollectServer = new ServerInfo("52.197.221.106", 25245);
         public ServerInfo RagnarokOfficialServer = new ServerInfo("219.84.200.54", 6900);

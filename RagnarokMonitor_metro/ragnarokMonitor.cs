@@ -1,7 +1,6 @@
 ﻿using System;
 using SharpPcap;
 using SharpPcap.LibPcap;
-using SharpPcap.WinPcap;
 using PacketDotNet;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -16,8 +15,8 @@ namespace RagnarokMonitor_metro
 
         private string target_ip;
         private string target_port;
-        private WinPcapDevice selectedWinPcapDevice;
-        
+        private ILiveDevice selectedWinPcapDevice;
+
         public ragnarokMonitor(MainForm mf)
         {
             mainform = mf;
@@ -34,25 +33,34 @@ namespace RagnarokMonitor_metro
 
         private void monitor_recv_runtime()
         {
+            ICaptureDevice dev = selectedWinPcapDevice;
             //Open the device for capturing
             int readTimeoutMilliseconds = 1000;
-            selectedWinPcapDevice.Open(DeviceMode.Promiscuous, readTimeoutMilliseconds);
+            dev.Open(mode: DeviceModes.Promiscuous | DeviceModes.NoCaptureLocal, read_timeout: readTimeoutMilliseconds);
 
             string filter = $"tcp and host {target_ip}";
-            selectedWinPcapDevice.Filter = filter;
+            dev.Filter = filter;
+
+            
 
             // Capture packets using GetNextPacket()
             while (onListen)
             {
-                RawCapture rawCapture = selectedWinPcapDevice.GetNextPacket();
-                if (rawCapture == null)
+                RawCapture packet = null;
+                PacketCapture e;
+
+                if (dev.GetNextPacket(out e) == GetPacketStatus.PacketRead) {
+                    packet = e.GetPacket();
+                }
+
+                if (packet == null)
                 {
                     continue;
                 }
 
                 // use PacketDotNet to parse this packet and print out
                 // its high level information
-                Packet parsedPacket = Packet.ParsePacket(rawCapture.LinkLayerType, rawCapture.Data);
+                Packet parsedPacket = Packet.ParsePacket(packet.LinkLayerType, packet.Data);
                 if (parsedPacket.HasPayloadPacket)
                 {
                     TcpPacket tcp = parsedPacket.Extract<TcpPacket>();
@@ -82,7 +90,7 @@ namespace RagnarokMonitor_metro
         private void handleServerInfo(TcpPacket packet)
         {
             int infoSetsNumber = 0,
-                infoOffset = 32;
+                infoOffset = 160;
 
             // Calculating how many server information sets do we received from server.
             infoSetsNumber = ragnarokPacket.getServerInfoSetsNumber(packet.PayloadData.Length);
@@ -95,10 +103,24 @@ namespace RagnarokMonitor_metro
                 {
                     int port, playerCount;
                     byte[] byteServerName = new byte[20];
+                    byte[] bytesUrl = new byte[70];
+
                     string IP, strServerName;
-                    IP = payloadData[0 + i * infoOffset + dataOffset].ToString() + "." + payloadData[1 + i * infoOffset + dataOffset].ToString() + "." +
-                         payloadData[2 + i * infoOffset + dataOffset].ToString() + "." + payloadData[3 + i * infoOffset + dataOffset].ToString();
-                    port = (payloadData[5 + i * infoOffset + dataOffset] << 8) + payloadData[4 + i * infoOffset + dataOffset];
+                    // slice server url bytes, NOTE: length = 70 bytes is a approximate value, the real size of server url info is much longer
+                    Array.Copy(payloadData, 31 + i * infoOffset + dataOffset, bytesUrl, 0, 70);
+                    string strServerURL = System.Text.Encoding.GetEncoding("ASCII").GetString(bytesUrl).Replace("\0", string.Empty);
+                    string[] result = strServerURL.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    IP = result[0];
+                    try
+                    {
+                        port = int.Parse(result[1]);
+                    } catch
+                    {
+                        port = 0;
+                    }
+                    
+
+                    // calculate playerCount
                     playerCount = (payloadData[27 + i * infoOffset + dataOffset] << 8) + payloadData[26 + i * infoOffset + dataOffset];
 
                     Array.Copy(payloadData, 6 + i * infoOffset + dataOffset, byteServerName, 0, 20);
@@ -126,14 +148,14 @@ namespace RagnarokMonitor_metro
             onListen = true;
 
             /* setup tWinPcapDevice */
-            WinPcapDevice wpDevice = getWinPcapDeviceByIP(mainform.getNetworkInterfaceText());
-            if (wpDevice == null)
+            ILiveDevice device = getWinPcapDeviceByIP(mainform.getNetworkInterfaceText());
+            if (device == null)
             {
                 stopMonitoring();
                 return;
             }
 
-            selectedWinPcapDevice = wpDevice;
+            selectedWinPcapDevice = device;
 
             rawsocket_worker = new Thread(monitor_recv_runtime);
             rawsocket_worker.Start();
@@ -167,10 +189,10 @@ namespace RagnarokMonitor_metro
             
         }
 
-        private WinPcapDevice getWinPcapDeviceByIP(string ip)
+        private ILiveDevice getWinPcapDeviceByIP(string ip)
         {
             // Retrieve the device list
-            var devices = WinPcapDeviceList.Instance;
+            var devices = CaptureDeviceList.Instance;
 
             // If no devices were found print an error
             if (devices.Count < 1)
@@ -180,7 +202,7 @@ namespace RagnarokMonitor_metro
             }
 
             // Find WinPcapDevice that contains input IP address 
-            foreach (WinPcapDevice device in devices)
+            foreach (LibPcapLiveDevice device in devices)
             {
                 ReadOnlyCollection<PcapAddress> addresses = device.Addresses;
                 foreach (var pcapAddr in addresses)

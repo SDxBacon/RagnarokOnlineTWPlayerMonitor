@@ -10,6 +10,7 @@ using RagnarokMonitor_sysinfo;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Principal;
+using System.Diagnostics;
 
 namespace RagnarokMonitor_metro
 {
@@ -136,7 +137,8 @@ namespace RagnarokMonitor_metro
             metroLabel_author.StyleManager = metroStyleManager1;
             metroLabel_version.StyleManager = metroStyleManager1;
             metroLabel_releasedate.StyleManager = metroStyleManager1;
-            metroLabel_contact.StyleManager = metroStyleManager1;
+            
+            metroLink1.StyleManager = metroStyleManager1;
             metroLabel1.StyleManager = metroStyleManager1;
             metroLabel2.StyleManager = metroStyleManager1;
             metroLabel3.StyleManager = metroStyleManager1;
@@ -159,7 +161,7 @@ namespace RagnarokMonitor_metro
             metroLabel_version.Text = sysinfo.Version;
             metroLabel_author.Text = sysinfo.Author;
             metroLabel_releasedate.Text = sysinfo.ReleaseDate;
-            metroLabel_contact.Text = sysinfo.Contact;
+            metroLink1.Text = sysinfo.Contact;
             metroLabel6.Text = sysinfo.ReleaseDate;
         }
 
@@ -431,6 +433,21 @@ namespace RagnarokMonitor_metro
         }
 
         private void metroLabel6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void metroLabel_contact_Click(object sender, EventArgs e)
+        {
+            Process.Start(sysinfo.Contact);
+        }
+
+        private void metroLink1_Click(object sender, EventArgs e)
+        {
+            Process.Start(sysinfo.Contact);
+        }
+
+        private void metroGrid1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
