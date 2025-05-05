@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "./assets/images/logo-universal.png";
 import "./App.css";
-import { Greet } from "../wailsjs/go/main/App";
+import { Greet, StartCaptureCharacterServerList } from "../wailsjs/go/main/App";
 
 function App() {
   const [resultText, setResultText] = useState(
@@ -14,6 +14,10 @@ function App() {
   function greet() {
     Greet(name).then(updateResultText);
   }
+
+  useEffect(() => {
+    StartCaptureCharacterServerList("TODO");
+  }, []);
 
   return (
     <div id="App">
