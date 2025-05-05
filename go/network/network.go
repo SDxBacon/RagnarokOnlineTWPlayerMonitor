@@ -65,8 +65,8 @@ func (pcs *PacketCaptureService) StartCaptureAllInterfaces() {
 	fmt.Printf("Found %d devices:\n", len(devices))
 
 	// then, iterate through all interfaces and capture packets
-	for index, device := range devices {
-		fmt.Printf("Device %d: %s\n", index, device.Name)
+	for _, device := range devices {
+		// fmt.Printf("Device %d: %s\n", index, device.Name)
 
 		// if the interface is not valid, skip it
 		if !IsValidInterface(device) {

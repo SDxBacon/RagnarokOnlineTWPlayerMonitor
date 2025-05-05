@@ -14,7 +14,9 @@ import (
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx                  context.Context
+	isCapturing          bool
+	packetCaptureService *network.PacketCaptureService
 }
 
 type LoginServer = config.LoginServer
@@ -69,18 +71,32 @@ func (a *App) GetLoginServers() []LoginServer {
 }
 
 func (a *App) StartCaptureCharacterServerList(targetServer string) {
+	fmt.Println("[StartCaptureCharacterServerList] entering ...")
+
+	// TODO:
+	if a.isCapturing || a.packetCaptureService != nil {
+		fmt.Println("[StartCaptureCharacterServerList] Already capturing, stop the previous capture.")
+		prevPacketCaptureService := a.packetCaptureService
+		prevPacketCaptureService.StopCapture() // stop the previous capture
+
+		// reset isCapturing flag and clean up packetCaptureService reference
+		a.isCapturing = false
+		a.packetCaptureService = nil
+	}
+
 	packetCaptureService := network.NewPacketCaptureService("tcp and net 219.84.200.54 and port 6900")
-
-	fmt.Println("Start capture character server list")
-
 	ctx := packetCaptureService.GetContext()
 	channel := packetCaptureService.GetPacketChannel()
+
+	// memorize the packetCaptureService and turn on isCapturing flag
+	a.packetCaptureService = packetCaptureService
+	a.isCapturing = true
 
 	// create a go routine to waiting for sniff worker done
 	go func() {
 		packetCaptureService.StartCaptureAllInterfaces()
 
-		// notify frontend that all interfaces are listening
+		// notify frontend that all interfaces might be listening
 		runtime.EventsEmit(a.ctx, "todo")
 
 		for {
@@ -106,16 +122,4 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 		}
 
 	}()
-
-	// if targetServer in loginServers {
-	// 	runtime.LogInfo(a.ctx, "Start listening to server: "+targetServer)
-	// } else {
-	// 	runtime.LogError(a.ctx, "Server not found: "+targetServer)
-	// }
-
-}
-
-func (a *App) StopListenToLoginServer() {
-	// stop listening
-	// TODO:
 }
