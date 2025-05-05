@@ -13,7 +13,3 @@ export function Greet(arg1) {
 export function StartCaptureCharacterServerList(arg1) {
   return window['go']['main']['App']['StartCaptureCharacterServerList'](arg1);
 }
-
-export function StopListenToLoginServer() {
-  return window['go']['main']['App']['StopListenToLoginServer']();
-}
