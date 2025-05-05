@@ -1,0 +1,13 @@
+<configuration>
+  <app>
+    <name>myproject</name>
+  </app>
+  <servers>
+      <server>
+        <name>Custom Server</name>
+        <IP>1.1.1.1</IP>
+        <port>6900</port>
+        <packet_id>0xc0a8</packet_id>
+      </server>
+  </servers>
+</configuration>
