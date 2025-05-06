@@ -62,8 +62,6 @@ func (pcs *PacketCaptureService) StartCaptureAllInterfaces() {
 		return
 	}
 
-	fmt.Printf("Found %d devices:\n", len(devices))
-
 	// then, iterate through all interfaces and capture packets
 	for _, device := range devices {
 		// fmt.Printf("Device %d: %s\n", index, device.Name)
@@ -89,7 +87,7 @@ func (pcs *PacketCaptureService) StartCaptureAllInterfaces() {
 				return
 			}
 
-			fmt.Println("Start sniffing on interface:", device.Name)
+			fmt.Printf("[Network.StartCaptureAllInterfaces] Start sniffing on interface: %s\n", device.Name)
 			// start capturing packets
 			packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 			packetSource.NoCopy = true

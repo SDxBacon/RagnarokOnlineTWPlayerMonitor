@@ -7,7 +7,12 @@
         <name>Custom Server</name>
         <IP>1.1.1.1</IP>
         <port>6900</port>
-        <packet_id>0xc0a8</packet_id>
+        <pattern>0xc0a8</pattern>
       </server>
+      <server>
+        <name>Another Server</name>
+        <IP>2.2.2.2</IP>
+        <port>6900</port>
+        <pattern>0xc0a8</pattern>
   </servers>
 </configuration>

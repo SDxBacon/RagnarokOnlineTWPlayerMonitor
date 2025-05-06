@@ -1,33 +1,51 @@
 package config
 
 import (
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"os"
+	"strings"
 )
 
-type Configuration struct {
-	XMLName xml.Name      `xml:"configuration"`
-	App     ConfigApp     `xml:"app"`
-	Servers ConfigServers `xml:"servers"`
+type XMLConfiguration struct {
+	XMLName xml.Name `xml:"configuration"`
+
+	App struct {
+		Name string `xml:"name"`
+	} `xml:"app"`
+
+	Servers []struct {
+		Server XMLLoginServer `xml:"server"`
+	} `xml:"servers"`
 }
 
-type ConfigApp struct {
-	Name string `xml:"name"`
-}
-
-type ConfigServers struct {
-	Servers []LoginServer `xml:"server"`
+type XMLLoginServer struct {
+	Name    string `xml:"name"`
+	IP      string `xml:"IP"`
+	Port    int    `xml:"port"`
+	Pattern string `xml:"pattern"`
 }
 
 type LoginServer struct {
-	Name     string `xml:"name"`
-	IP       string `xml:"IP"`
-	Port     int    `xml:"port"`
-	PacketID string `xml:"packet_id"`
+	Name    string
+	IP      string
+	Port    int
+	Pattern []byte
 }
 
-func LoadConfig(path string) (*Configuration, error) {
+func hexStringToBytes(hexStr string) ([]byte, error) {
+	// remove "0x" prefix if present
+	hexStr = strings.TrimPrefix(hexStr, "0x")
+	// if the length of the hex string is odd, prepend a "0"
+	if len(hexStr)%2 != 0 {
+		hexStr = "0" + hexStr
+	}
+	// decode the hex string to bytes
+	return hex.DecodeString(hexStr)
+}
+
+func LoadCustomServersFromXML(path string) ([]LoginServer, error) {
 	// check if the config.xml file exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		// config.xml not found, return nil
@@ -43,7 +61,7 @@ func LoadConfig(path string) (*Configuration, error) {
 	}
 
 	// parse XML
-	var config Configuration
+	var config XMLConfiguration
 	err = xml.Unmarshal(data, &config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse config.xml at %s: %v", path, err)
@@ -55,6 +73,21 @@ func LoadConfig(path string) (*Configuration, error) {
 		return nil, nil
 	}
 
-	// match, return the config
-	return &config, nil
+	// convert the `pattern` field from hex string to byte array
+	loginServers := make([]LoginServer, len(config.Servers))
+
+	for i, server := range config.Servers {
+		pattern, err := hexStringToBytes(server.Server.Pattern)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert pattern from hex string to bytes: %v", err)
+		}
+		loginServers[i] = LoginServer{
+			Name:    server.Server.Name,
+			IP:      server.Server.IP,
+			Port:    server.Server.Port,
+			Pattern: pattern,
+		}
+	}
+
+	return loginServers, nil
 }

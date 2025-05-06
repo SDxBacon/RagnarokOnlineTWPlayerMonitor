@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"myproject/go/config"
@@ -22,8 +23,8 @@ type App struct {
 type LoginServer = config.LoginServer
 
 var loginServers []LoginServer = []LoginServer{
-	{Name: "Taiwan", IP: "219.84.200.54", Port: 6900, PacketID: "0xc0a8"},
-	{Name: "Korea", IP: "112.175.128.137", Port: 6900, PacketID: "0xc0a8"},
+	{Name: "Taiwan", IP: "219.84.200.54", Port: 6900, Pattern: []byte{0xc0, 0xa8}},
+	{Name: "Korea", IP: "112.175.128.137", Port: 6900, Pattern: []byte{0xc0, 0xa8}},
 }
 
 // NewApp creates a new App application struct
@@ -36,19 +37,23 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
-	_ = a.buildConfigPath()
-	// config, err := a.loadConfig()
-	// if err != nil {
-	// 	runtime.LogError(a.ctx, "Failed to load config: "+err.Error())
-	// 	return
-	// }
+	configPath := a.buildConfigPath() // FIXME:
 
-	// runtime.LogInfo(a.ctx, "Config loaded: App Name = "+config.App.Name+", Server Count = "+string(len(config.Servers.Servers)))
+	runtime.LogInfo(a.ctx, "Config path: "+configPath)
+
+	customServers, err := config.LoadCustomServersFromXML("./config.xml")
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to load config: %v", err)
+		return
+	}
+
+	runtime.LogInfof(a.ctx, "customServers: %+v", customServers)
 }
 
 func (a *App) buildConfigPath() string {
 	// acquire the path of the executable
 	exePath, err := os.Executable()
+	runtime.LogInfof(a.ctx, "[buildConfigPath] Executable path: %s", exePath)
 	if err != nil {
 		// return nil, fmt.Errorf("failed to get executable path: %v", err)
 		return ""
@@ -101,14 +106,15 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 
 		for {
 			select {
-			// receive packet from channel
 			case payload := <-channel:
-				if payload[0] != 0xc0 || payload[1] != 0xa8 {
-					// skip if not 0xc0a8
+				// receive packet from channel
+				pattern := loginServers[0].Pattern
+				// check if the payload is started with `pattern`
+				if !bytes.Equal(payload[:2], pattern) {
 					continue
 				}
 
-				charServerInfoList := ragnarok.ParsePayloadToCharacterServerInfo(payload, []byte{0xc0, 0xa8})
+				charServerInfoList := ragnarok.ParsePayloadToCharacterServerInfo(payload, pattern)
 
 				fmt.Println("charServerInfoList: ", charServerInfoList)
 
