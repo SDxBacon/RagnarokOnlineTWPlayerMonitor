@@ -117,7 +117,7 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 			case <-ctx.Done():
 				// handle context done signal
 				// TODO:
-				// do nothing, just wait for signal
+				return
 			}
 		}
 
