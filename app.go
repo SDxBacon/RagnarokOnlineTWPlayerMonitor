@@ -56,15 +56,18 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) buildConfigPath() string {
-	// acquire the path of the executable
-	exePath, err := os.Executable()
-	runtime.LogInfof(a.ctx, "[buildConfigPath] Executable path: %s", exePath)
-	if err != nil {
-		// return nil, fmt.Errorf("failed to get executable path: %v", err)
-		return ""
+	inDevMode := runtime.Environment(a.ctx).BuildType == "development"
+
+	var basePath string
+	if inDevMode {
+		// in development mode, use the current working directory
+		basePath, _ = os.Getwd()
+	} else {
+		// in production mode, use the executable path
+		basePath, _ = os.Executable()
 	}
-	// get the directory of the executable
-	dir := filepath.Dir(exePath)
+	// get the directory of basePath
+	dir := filepath.Dir(basePath)
 	// construct the path to config.xml
 	configPath := filepath.Join(dir, "config.xml")
 	return configPath
@@ -107,7 +110,7 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 		packetCaptureService.StartCaptureAllInterfaces()
 
 		// notify frontend that all interfaces might be listening
-		runtime.EventsEmit(a.ctx, "todo")
+		// runtime.EventsEmit(a.ctx, "todo")
 
 		for {
 			select {
