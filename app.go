@@ -39,15 +39,20 @@ func (a *App) startup(ctx context.Context) {
 
 	configPath := a.buildConfigPath() // FIXME:
 
-	runtime.LogInfo(a.ctx, "Config path: "+configPath)
+	runtime.LogInfo(a.ctx, "[App.startup] Config path: "+configPath)
 
 	customServers, err := config.LoadCustomServersFromXML("./config.xml")
 	if err != nil {
-		runtime.LogErrorf(a.ctx, "Failed to load config: %v", err)
+		runtime.LogInfof(a.ctx, "[App.startup] Failed to load config: %v", err)
 		return
 	}
 
-	runtime.LogInfof(a.ctx, "customServers: %+v", customServers)
+	if len(customServers) == 0 {
+		runtime.LogInfo(a.ctx, "[App.startup] No custom servers found in config.")
+		return
+	}
+
+	runtime.LogInfof(a.ctx, "[App.startup] customServers: %+v", customServers)
 }
 
 func (a *App) buildConfigPath() string {
