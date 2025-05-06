@@ -8,23 +8,19 @@ import (
 	"strings"
 )
 
-type XMLConfiguration struct {
+type Configuration struct {
 	XMLName xml.Name `xml:"configuration"`
-
-	App struct {
+	App     struct {
 		Name string `xml:"name"`
 	} `xml:"app"`
-
-	Servers []struct {
-		Server XMLLoginServer `xml:"server"`
+	Servers struct {
+		Server []struct {
+			Name    string `xml:"name"`
+			IP      string `xml:"IP"`
+			Port    int    `xml:"port"`
+			Pattern string `xml:"pattern"`
+		} `xml:"server"`
 	} `xml:"servers"`
-}
-
-type XMLLoginServer struct {
-	Name    string `xml:"name"`
-	IP      string `xml:"IP"`
-	Port    int    `xml:"port"`
-	Pattern string `xml:"pattern"`
 }
 
 type LoginServer struct {
@@ -61,7 +57,7 @@ func LoadCustomServersFromXML(path string) ([]LoginServer, error) {
 	}
 
 	// parse XML
-	var config XMLConfiguration
+	var config Configuration
 	err = xml.Unmarshal(data, &config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse config.xml at %s: %v", path, err)
@@ -74,17 +70,19 @@ func LoadCustomServersFromXML(path string) ([]LoginServer, error) {
 	}
 
 	// convert the `pattern` field from hex string to byte array
-	loginServers := make([]LoginServer, len(config.Servers))
+	loginServers := make([]LoginServer, len(config.Servers.Server))
 
-	for i, server := range config.Servers {
-		pattern, err := hexStringToBytes(server.Server.Pattern)
+	fmt.Println("[LoadCustomServersFromXML] Found custom servers:", len(config.Servers.Server))
+
+	for i, server := range config.Servers.Server {
+		pattern, err := hexStringToBytes(server.Pattern)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert pattern from hex string to bytes: %v", err)
 		}
 		loginServers[i] = LoginServer{
-			Name:    server.Server.Name,
-			IP:      server.Server.IP,
-			Port:    server.Server.Port,
+			Name:    server.Name,
+			IP:      server.IP,
+			Port:    server.Port,
 			Pattern: pattern,
 		}
 	}
