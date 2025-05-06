@@ -2,9 +2,9 @@ build/bin
 node_modules
 frontend/dist
 
-# Enable zero install for Yarn
+# Disable zero install for Yarn
+.pnp.*
 .yarn/*
-!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
