@@ -4,7 +4,7 @@ export namespace config {
 	    Name: string;
 	    IP: string;
 	    Port: number;
-	    PacketID: string;
+	    Pattern: number[];
 	
 	    static createFrom(source: any = {}) {
 	        return new LoginServer(source);
@@ -15,7 +15,7 @@ export namespace config {
 	        this.Name = source["Name"];
 	        this.IP = source["IP"];
 	        this.Port = source["Port"];
-	        this.PacketID = source["PacketID"];
+	        this.Pattern = source["Pattern"];
 	    }
 	}
 
