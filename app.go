@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"myproject/go/config"
+	"myproject/go/github"
 	"myproject/go/network"
 	"myproject/go/ragnarok"
 	"os"
@@ -16,8 +17,13 @@ import (
 // App struct
 type App struct {
 	ctx                  context.Context
+	services             AppServices
 	isCapturing          bool
 	packetCaptureService *network.PacketCaptureService
+}
+
+type AppServices struct {
+	github *github.GitHubService
 }
 
 type LoginServer = config.LoginServer
@@ -37,7 +43,13 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
-	configPath := a.buildConfigPath() // FIXME:
+	// Initialize services
+	a.services = AppServices{
+		github: github.NewGitHubService(ctx),
+	}
+
+	// FIXME:
+	configPath := a.buildConfigPath()
 
 	runtime.LogInfo(a.ctx, "[App.startup] Config path: "+configPath)
 
@@ -71,6 +83,41 @@ func (a *App) buildConfigPath() string {
 	// construct the path to config.xml
 	configPath := filepath.Join(dir, "config.xml")
 	return configPath
+}
+
+// CheckForUpdate checks if there is a newer version of the application available.
+// It retrieves the latest release tag from GitHub and compares it with the current version.
+// If a newer version is available, it returns the latest tag string.
+// If there's no update or an error occurs during the check process, it returns an empty string.
+// Any errors encountered during the process are logged.
+func (a *App) CheckForUpdate() string {
+	// TODO:
+	currentVersion := "0.0.0"
+
+	latestTag, err := a.services.github.GetLatestReleaseTag()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "[App.GetGitHubLatestRelease] Failed to get latest release: %v", err)
+		return ""
+	}
+
+	if latestTag == "" {
+		runtime.LogInfo(a.ctx, "[App.GetGitHubLatestRelease] `latestTag` is empty string.")
+		return ""
+	}
+
+	hasUpdate, err := a.hasUpdate(currentVersion, latestTag)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "[App.GetGitHubLatestRelease] Failed to compare versions: %v", err)
+		return ""
+	}
+
+	if hasUpdate {
+		runtime.LogInfof(a.ctx, "[App.GetGitHubLatestRelease] Update available: %s", latestTag)
+		return latestTag
+	} else {
+		runtime.LogInfo(a.ctx, "[App.GetGitHubLatestRelease] No update available.")
+		return ""
+	}
 }
 
 // Greet returns a greeting for the given name
