@@ -10,10 +10,6 @@ export function GetLoginServers() {
   return window['go']['main']['App']['GetLoginServers']();
 }
 
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
-}
-
 export function StartCaptureCharacterServerList(arg1) {
   return window['go']['main']['App']['StartCaptureCharacterServerList'](arg1);
 }

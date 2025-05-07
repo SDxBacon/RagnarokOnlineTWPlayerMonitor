@@ -120,11 +120,6 @@ func (a *App) CheckForUpdate() string {
 	}
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
 // GetServers returns the list of servers
 func (a *App) GetLoginServers() []LoginServer {
 	return loginServers
