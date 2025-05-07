@@ -64,7 +64,29 @@ func (a *App) startup(ctx context.Context) {
 		return
 	}
 
+	// Custom servers are found, merge them with default servers
+	for _, customServer := range customServers {
+		// Check if the server already exists in the default list
+		var ptr *LoginServer
+
+		for i, server := range loginServers {
+			if customServer.Name == server.Name {
+				ptr = &loginServers[i]
+				break
+			}
+		}
+
+		if ptr == nil {
+			// If the server doesn't exist, append it to the list
+			loginServers = append(loginServers, customServer)
+		} else {
+			// Otherwise, update the existing server with the custom server's details
+			*ptr = customServer
+		}
+	}
+
 	runtime.LogInfof(a.ctx, "[App.startup] customServers: %+v", customServers)
+	runtime.LogInfof(a.ctx, "[App.startup] new loginServers: %+v", loginServers)
 }
 
 func (a *App) buildConfigPath() string {
@@ -122,6 +144,7 @@ func (a *App) CheckForUpdate() string {
 
 // GetServers returns the list of servers
 func (a *App) GetLoginServers() []LoginServer {
+	runtime.LogInfof(a.ctx, "[App.GetLoginServers] loginServers: %+v", loginServers)
 	return loginServers
 }
 
