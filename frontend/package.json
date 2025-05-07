@@ -20,6 +20,7 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^4.4.1",
+    "corepack": "^0.32.0",
     "typescript": "^4.6.4",
     "vite": "^6.3.5"
   },
