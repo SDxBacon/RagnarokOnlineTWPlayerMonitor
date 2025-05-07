@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useEffectOnce } from "react-use";
 // import local components
 import ServerSelect from "@/components/ServerSelect";
+import CharacterServerTable from "@/components/CharacterServerTable";
 // import wailjs api
 import { GetLoginServers } from "../wailsjs/go/main/App";
 import { config } from "../wailsjs/go/models";
@@ -28,6 +29,7 @@ function App() {
   return (
     <div id="App" className="bg-background text-foreground">
       <ServerSelect options={servers} />
+      <CharacterServerTable />
     </div>
   );
 }
