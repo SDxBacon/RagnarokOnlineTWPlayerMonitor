@@ -1,3 +1,4 @@
+import { config } from "../../wailsjs/go/models";
 import {
   Select,
   SelectContent,
@@ -6,16 +7,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const ServerSelect = () => {
+interface ServerSelectProps {
+  options: config.LoginServer[];
+}
+
+const ServerSelect = (props: ServerSelectProps) => {
+  const { options } = props;
   return (
     <Select>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Theme" />
+        <SelectValue placeholder="Please select a server" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
-        <SelectItem value="system">System</SelectItem>
+        {options.map((option) => (
+          <SelectItem key={option.Name} value={option.Name}>
+            {option.Name}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
