@@ -13,3 +13,7 @@ export function GetLoginServers() {
 export function StartCaptureCharacterServerList(arg1) {
   return window['go']['main']['App']['StartCaptureCharacterServerList'](arg1);
 }
+
+export function StopCapture() {
+  return window['go']['main']['App']['StopCapture']();
+}

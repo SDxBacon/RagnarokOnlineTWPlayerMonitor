@@ -148,6 +148,27 @@ func (a *App) GetLoginServers() []LoginServer {
 	return loginServers
 }
 
+// StopCapture stops the ongoing packet capturing process.
+// It checks if there is an active packet capture service, stops it if it exists,
+// sets the capture flag to false, and cleans up the service reference.
+//
+// Returns:
+//   - bool: Always returns true, indicating the operation completed (whether or not
+//     there was an actual service to stop).
+func (a *App) StopCapture() bool {
+	fmt.Println("[StopCapture] entering ...")
+
+	if a.packetCaptureService != nil {
+		a.packetCaptureService.StopCapture()
+		a.isCapturing = false
+		a.packetCaptureService = nil
+		return true
+	}
+
+	fmt.Println("[StopCapture] No capture service to stop.")
+	return true
+}
+
 func (a *App) StartCaptureCharacterServerList(targetServer string) {
 	fmt.Println("[StartCaptureCharacterServerList] entering ...")
 
