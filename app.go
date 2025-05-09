@@ -47,12 +47,11 @@ func (a *App) startup(ctx context.Context) {
 	a.services = AppServices{
 		github: github.NewGitHubService(ctx),
 	}
-
-	// FIXME:
+	// build the config path
 	configPath := a.buildConfigPath()
-
 	runtime.LogInfo(a.ctx, "[App.startup] Config path: "+configPath)
 
+	// Load the config file
 	customServers, err := config.LoadCustomServersFromXML("./config.xml")
 	if err != nil {
 		runtime.LogInfof(a.ctx, "[App.startup] Failed to load config: %v", err)

@@ -11,26 +11,26 @@ import { config } from "../wailsjs/go/models";
 import "./App.css";
 
 function App() {
+  const [selectedServer, setSelectedServer] =
+    useState<config.LoginServer | null>(null);
   const [servers, setServers] = useState<config.LoginServer[]>([]);
 
-  const gettt = async () => {
-    try {
-      const servers = await GetLoginServers();
-      setServers(servers);
-      console.log("Login servers:", servers);
-    } catch (error) {
-      console.error("Error fetching login servers:", error);
-    }
-  };
-
   useEffectOnce(() => {
-    gettt();
+    (async () => {
+      try {
+        const servers = await GetLoginServers();
+        setServers(servers);
+        setSelectedServer(servers[0]);
+      } catch (error) {
+        console.error("Error fetching login servers:", error);
+      }
+    })();
   });
 
   return (
     <div id="App" className="bg-background text-foreground">
       <CheckUpdateIcon />
-      <ServerSelect options={servers} />
+      <ServerSelect value={selectedServer} options={servers} />
       <CharacterServerTable />
     </div>
   );

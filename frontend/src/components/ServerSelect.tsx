@@ -8,13 +8,18 @@ import {
 } from "@/components/ui/select";
 
 interface ServerSelectProps {
+  value: config.LoginServer | null;
   options: config.LoginServer[];
 }
 
 const ServerSelect = (props: ServerSelectProps) => {
-  const { options } = props;
+  const { value, options } = props;
   return (
-    <Select>
+    <Select
+      value={value?.Name}
+      // TODO: remove disabled in the future
+      disabled
+    >
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Please select a server" />
       </SelectTrigger>
