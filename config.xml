@@ -4,14 +4,8 @@
   </app>
   <servers>
       <server>
-        <name>Custom Server</name>
-        <IP>1.1.1.1</IP>
-        <port>6900</port>
-        <pattern>0xc0a8</pattern>
-      </server>
-      <server>
-        <name>Another Server</name>
-        <IP>2.2.2.2</IP>
+        <name>Taiwan</name>
+        <IP>219.84.200.54</IP>
         <port>6900</port>
         <pattern>0xc0a8</pattern>
       </server>
