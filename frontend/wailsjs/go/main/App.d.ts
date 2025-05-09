@@ -6,6 +6,8 @@ export function CheckForUpdate():Promise<string>;
 
 export function GetLoginServers():Promise<Array<config.LoginServer>>;
 
+export function OpenGitHub():Promise<void>;
+
 export function StartCaptureCharacterServerList(arg1:string):Promise<void>;
 
 export function StopCapture():Promise<boolean>;

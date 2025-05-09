@@ -223,3 +223,7 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 
 	}()
 }
+
+func (a *App) OpenGitHub() {
+	runtime.BrowserOpenURL(a.ctx, "https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor")
+}

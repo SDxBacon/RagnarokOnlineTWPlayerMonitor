@@ -2,49 +2,98 @@ import isEmpty from "lodash/isEmpty";
 import { useState } from "react";
 import { useEffectOnce } from "react-use";
 import { Button } from "@/components/ui/button";
+import GitHubButton from "./GitHubButton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-import { CheckForUpdate } from "../../wailsjs/go/main/App";
+import { CheckForUpdate, OpenGitHub } from "../../wailsjs/go/main/App";
+
+enum NewVersionStatus {
+  Unknown = "Unknown",
+  Checking = "Checking",
+  UpToDate = "UpToDate",
+  UpdateAvailable = "UpdateAvailable",
+  Error = "Error",
+}
 
 const CheckUpdateIcon = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState(NewVersionStatus.Unknown);
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
 
-  // TODO: complete the function to check for updates
+  const tooltipMessage = (() => {
+    switch (status) {
+      case NewVersionStatus.Checking:
+        return "檢查是否有更新中...";
+      case NewVersionStatus.UpToDate:
+        return "目前已是最新版本";
+      case NewVersionStatus.UpdateAvailable:
+        return `有新版本可供下載! 最新版本: ${latestVersion}`;
+      case NewVersionStatus.Error:
+        return "檢查更新時發生錯誤";
+      default:
+        return "";
+    }
+  })();
+
+  const handleMouseEnter = () => {
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsOpen(false);
+  };
+
+  // effect to check for updates
+  // this effect will run only once when the component is mounted
   useEffectOnce(() => {
+    // update the status to checking
+    setStatus(NewVersionStatus.Checking);
+    // call the CheckForUpdate function from the App module
     CheckForUpdate()
       .then((result) => {
-        if (isEmpty(result)) {
-          console.log("No updates available.");
-          setLatestVersion("No updates available");
-          return;
+        const nextStatus = isEmpty(result)
+          ? NewVersionStatus.UpToDate
+          : NewVersionStatus.UpdateAvailable;
+        const nextLatestVersion = isEmpty(result) ? null : result;
+
+        // if the status is UpdateAvailable, set the isOpen state to true
+        if (nextStatus === NewVersionStatus.UpdateAvailable) {
+          setIsOpen(true);
         }
-        console.log("Update available:", result);
-        setLatestVersion("Update available");
+
+        setStatus(nextStatus);
+        setLatestVersion(nextLatestVersion);
       })
-      .catch((error) => {
-        console.error("Error checking for updates:", error);
-        setLatestVersion("Check fail");
+      .catch(() => {
+        setStatus(NewVersionStatus.Error);
+        setLatestVersion(null);
       });
   });
 
+  if (status === NewVersionStatus.Unknown) {
+    return <GitHubButton onClick={OpenGitHub} />;
+  }
+
   return (
-    <div>
-      <Button variant="outline" size="icon">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+    <TooltipProvider>
+      <Tooltip open={isOpen}>
+        <TooltipTrigger>
+          <GitHubButton
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={OpenGitHub}
           />
-        </svg>
-      </Button>
-    </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltipMessage}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 

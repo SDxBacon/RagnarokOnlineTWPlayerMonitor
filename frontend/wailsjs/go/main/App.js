@@ -10,6 +10,10 @@ export function GetLoginServers() {
   return window['go']['main']['App']['GetLoginServers']();
 }
 
+export function OpenGitHub() {
+  return window['go']['main']['App']['OpenGitHub']();
+}
+
 export function StartCaptureCharacterServerList(arg1) {
   return window['go']['main']['App']['StartCaptureCharacterServerList'](arg1);
 }
