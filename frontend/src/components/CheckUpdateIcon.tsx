@@ -1,7 +1,7 @@
 import isEmpty from "lodash/isEmpty";
 import { useState } from "react";
 import { useEffectOnce } from "react-use";
-import { Button } from "@/components/ui/button";
+
 import GitHubButton from "./GitHubButton";
 import {
   Tooltip,
@@ -21,9 +21,18 @@ enum NewVersionStatus {
 }
 
 const CheckUpdateIcon = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState(NewVersionStatus.Unknown);
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
+
+  let hasNotification = false;
+  switch (status) {
+    case NewVersionStatus.UpdateAvailable:
+    case NewVersionStatus.Error:
+      hasNotification = true;
+      break;
+    default:
+      hasNotification = false;
+  }
 
   const tooltipMessage = (() => {
     switch (status) {
@@ -40,14 +49,6 @@ const CheckUpdateIcon = () => {
     }
   })();
 
-  const handleMouseEnter = () => {
-    setIsOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsOpen(false);
-  };
-
   // effect to check for updates
   // this effect will run only once when the component is mounted
   useEffectOnce(() => {
@@ -60,11 +61,6 @@ const CheckUpdateIcon = () => {
           ? NewVersionStatus.UpToDate
           : NewVersionStatus.UpdateAvailable;
         const nextLatestVersion = isEmpty(result) ? null : result;
-
-        // if the status is UpdateAvailable, set the isOpen state to true
-        if (nextStatus === NewVersionStatus.UpdateAvailable) {
-          setIsOpen(true);
-        }
 
         setStatus(nextStatus);
         setLatestVersion(nextLatestVersion);
@@ -81,13 +77,9 @@ const CheckUpdateIcon = () => {
 
   return (
     <TooltipProvider>
-      <Tooltip open={isOpen}>
-        <TooltipTrigger>
-          <GitHubButton
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onClick={OpenGitHub}
-          />
+      <Tooltip>
+        <TooltipTrigger className="relative" onClick={OpenGitHub}>
+          <GitHubButton hasNotification={hasNotification} />
         </TooltipTrigger>
         <TooltipContent>
           <p>{tooltipMessage}</p>
