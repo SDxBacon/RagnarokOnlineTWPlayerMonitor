@@ -7,10 +7,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const CharacterServerTable = () => {
+import { ragnarok } from "../../wailsjs/go/models";
+
+interface CharacterServerTableProps {
+  data: ragnarok.CharacterServerInfo[];
+}
+
+const CharacterServerTable = (props: CharacterServerTableProps) => {
+  const { data } = props;
+
   return (
-    <Table>
-      <TableHeader>
+    <Table className="bg-[var(--accent)] h-[225px]">
+      <TableHeader className="bg-[var(--chart-5)]">
         <TableRow>
           <TableHead>Server</TableHead>
           <TableHead>Address</TableHead>
@@ -18,11 +26,13 @@ const CharacterServerTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell className="font-medium">Poring</TableCell>
-          <TableCell>hello.world:5566</TableCell>
-          <TableCell>1234</TableCell>
-        </TableRow>
+        {data.map((item, index) => (
+          <TableRow key={index}>
+            <TableCell className="font-medium">{item.Name}</TableCell>
+            <TableCell>{item.Url}</TableCell>
+            <TableCell>{item.Players}</TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
