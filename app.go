@@ -28,6 +28,8 @@ type AppServices struct {
 
 type LoginServer = config.LoginServer
 
+type CharacterServerInfo = ragnarok.CharacterServerInfo
+
 var loginServers []LoginServer = []LoginServer{
 	{Name: "Taiwan", IP: "219.84.200.54", Port: 6900, Pattern: []byte{0xc0, 0xa8}},
 	{Name: "Korea", IP: "112.175.128.137", Port: 6900, Pattern: []byte{0xc0, 0xa8}},
@@ -168,12 +170,12 @@ func (a *App) StopCapture() bool {
 	return true
 }
 
-func (a *App) StartCaptureCharacterServerList(targetServer string) {
-	fmt.Println("[StartCaptureCharacterServerList] entering ...")
+func (a *App) StartCapture(targetServer string) []CharacterServerInfo {
+	runtime.LogInfof(a.ctx, "[App.StartCapture] entering with targetServer: %s ...", targetServer)
 
-	// TODO:
 	if a.isCapturing || a.packetCaptureService != nil {
-		fmt.Println("[StartCaptureCharacterServerList] Already capturing, stop the previous capture.")
+		runtime.LogWarningf(a.ctx, "[App.StartCapture] Already capturing, stop the previous capture.")
+
 		prevPacketCaptureService := a.packetCaptureService
 		prevPacketCaptureService.StopCapture() // stop the previous capture
 
@@ -182,7 +184,22 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 		a.packetCaptureService = nil
 	}
 
-	packetCaptureService := network.NewPacketCaptureService("tcp and net 219.84.200.54 and port 6900")
+	// construct the net filter for packet capture service by targetServer
+	var filter string
+	for _, server := range loginServers {
+		if server.Name == targetServer {
+			filter = fmt.Sprintf("tcp and net %s and port %d", server.IP, server.Port)
+			runtime.LogInfof(a.ctx, "[App.StartCapture] build filter success: %s", filter)
+			break
+		}
+	}
+	// if filter is empty, it means no matching server found
+	if filter == "" {
+		runtime.LogWarningf(a.ctx, "[App.StartCapture] No matching server found for targetServer: %s", targetServer)
+		return nil
+	}
+
+	packetCaptureService := network.NewPacketCaptureService(filter)
 	ctx := packetCaptureService.GetContext()
 	channel := packetCaptureService.GetPacketChannel()
 
@@ -190,37 +207,33 @@ func (a *App) StartCaptureCharacterServerList(targetServer string) {
 	a.packetCaptureService = packetCaptureService
 	a.isCapturing = true
 
-	// create a go routine to waiting for sniff worker done
-	go func() {
-		packetCaptureService.StartCaptureAllInterfaces()
+	// start the packet capture service
+	packetCaptureService.StartCaptureAllInterfaces()
 
-		// notify frontend that all interfaces might be listening
-		// runtime.EventsEmit(a.ctx, "todo")
-
-		for {
-			select {
-			case payload := <-channel:
-				// receive packet from channel
-				pattern := loginServers[0].Pattern
-				// check if the payload is started with `pattern`
-				if !bytes.Equal(payload[:2], pattern) {
-					continue
-				}
-
-				charServerInfoList := ragnarok.ParsePayloadToCharacterServerInfo(payload, pattern)
-
-				fmt.Println("charServerInfoList: ", charServerInfoList)
-
-				// packetCaptureService.StopCapture()
+	for {
+		select {
+		case payload := <-channel:
+			// receive packet from channel
+			pattern := loginServers[0].Pattern
+			// check if the payload is started with `pattern`
+			if !bytes.Equal(payload[:2], pattern) {
 				continue
-			case <-ctx.Done():
-				// handle context done signal
-				// TODO:
-				return
 			}
-		}
 
-	}()
+			charServerInfoList := ragnarok.ParsePayloadToCharacterServerInfo(payload, pattern)
+
+			runtime.LogInfof(a.ctx, "[App.StartCapture] charServerInfoList: %+v", charServerInfoList)
+
+			// stop the packet capture service
+			packetCaptureService.StopCapture()
+			// return the charServerInfoList
+			return charServerInfoList
+		case <-ctx.Done():
+			// handle context done signal
+			return nil
+		}
+	}
+
 }
 
 func (a *App) OpenGitHub() {

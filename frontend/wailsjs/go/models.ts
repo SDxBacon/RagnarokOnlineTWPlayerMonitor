@@ -21,3 +21,24 @@ export namespace config {
 
 }
 
+export namespace ragnarok {
+	
+	export class CharacterServerInfo {
+	    Name: string;
+	    Url: string;
+	    Players: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CharacterServerInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Url = source["Url"];
+	        this.Players = source["Players"];
+	    }
+	}
+
+}
+

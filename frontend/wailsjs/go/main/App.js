@@ -14,8 +14,8 @@ export function OpenGitHub() {
   return window['go']['main']['App']['OpenGitHub']();
 }
 
-export function StartCaptureCharacterServerList(arg1) {
-  return window['go']['main']['App']['StartCaptureCharacterServerList'](arg1);
+export function StartCapture(arg1) {
+  return window['go']['main']['App']['StartCapture'](arg1);
 }
 
 export function StopCapture() {
