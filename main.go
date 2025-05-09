@@ -18,10 +18,11 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:    "myproject",
-		Width:    720,
-		Height:   360,
-		LogLevel: logger.INFO,
+		Title:              "myproject",
+		Width:              720,
+		Height:             330,
+		LogLevel:           logger.INFO,
+		LogLevelProduction: logger.ERROR,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
