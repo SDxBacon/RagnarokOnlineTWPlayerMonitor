@@ -1,5 +1,5 @@
 import isEmpty from "lodash/isEmpty";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useEffectOnce } from "react-use";
 // import local components
 import ServerSelect from "@/components/ServerSelect";
@@ -10,7 +10,6 @@ import Footer from "@/components/Footer";
 // import wailjs api
 import { GetLoginServers, StartCapture } from "../wailsjs/go/main/App";
 import { config, ragnarok } from "../wailsjs/go/models";
-import { EventsOn } from "../wailsjs/runtime/runtime";
 // import local styles
 import "./App.css";
 
@@ -53,10 +52,6 @@ function App() {
       }
     })();
   });
-
-  useEffect(() => {
-    EventsOn("CHAR_SERVER_CAPTURED", (data: any) => {});
-  }, []);
 
   return (
     <div id="app" className="flex flex-col bg-background text-foreground">
