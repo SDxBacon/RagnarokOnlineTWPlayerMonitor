@@ -3,10 +3,11 @@ import { useState } from "react";
 import { useEffectOnce } from "react-use";
 // import local components
 import ServerSelect from "@/components/ServerSelect";
-import CheckUpdateIcon from "./components/CheckUpdateIcon";
 import CharacterServerTable from "@/components/CharacterServerTable";
 import StartCaptureButton from "@/components/StartCaptureButton";
 import Footer from "@/components/Footer";
+// import local hooks
+import useCheckUpdateOnce from "@/hooks/useCheckUpdateOnce";
 // import wailjs api
 import { GetLoginServers, StartCapture } from "../wailsjs/go/main/App";
 import { config, ragnarok } from "../wailsjs/go/models";
@@ -20,6 +21,8 @@ function App() {
 
   const [isCapture, setIsCapture] = useState(false);
   const [data, setData] = useState<ragnarok.CharacterServerInfo[]>([]);
+
+  const [isUpdateAvailable, latestVersion] = useCheckUpdateOnce();
 
   const handleStartCaptureButtonClick = () => {
     if (selectedServer === null) return;
@@ -78,7 +81,10 @@ function App() {
       </div>
 
       {/* Footer  */}
-      <Footer />
+      <Footer
+        isUpdateAvailable={isUpdateAvailable}
+        latestVersion={latestVersion}
+      />
     </div>
   );
 }
