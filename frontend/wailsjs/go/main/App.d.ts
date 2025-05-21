@@ -9,6 +9,8 @@ export function GetAppVersion():Promise<string>;
 
 export function GetLoginServers():Promise<Array<config.LoginServer>>;
 
+export function OpenAuthorPage():Promise<void>;
+
 export function OpenGitHub():Promise<void>;
 
 export function StartCapture(arg1:string):Promise<Array<ragnarok.CharacterServerInfo>>;

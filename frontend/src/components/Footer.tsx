@@ -8,7 +8,7 @@ import { LatestVersion } from "@/hooks/useCheckUpdateOnce";
 
 import GitHubIconWithNotification from "./GitHubIconWithNotification";
 
-import { OpenGitHub } from "../../wailsjs/go/main/App";
+import { OpenGitHub, OpenAuthorPage } from "../../wailsjs/go/main/App";
 import useAppVersion from "@/hooks/useAppVersion";
 
 interface FooterProps {
@@ -26,8 +26,12 @@ function Footer(props: FooterProps) {
       <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
         {/* left - version / author information */}
         <p>
-          Version: {currAppVersion} |{" "}
-          <a href="#" className="hover:text-[#0c77f2] hover:underline">
+          {`Version: ${currAppVersion} | `}
+          <a
+            href="#"
+            className="hover:text-[#0c77f2] hover:underline"
+            onClick={OpenAuthorPage}
+          >
             Created by Ren-Wei Luo
           </a>
         </p>
@@ -38,7 +42,6 @@ function Footer(props: FooterProps) {
               <a
                 className="hover:text-[#0c77f2] hover:underline flex items-center gap-1"
                 href="#"
-                onClick={OpenGitHub}
               >
                 <GitHubIconWithNotification showDot={isUpdateAvailable} />
                 View on GitHub

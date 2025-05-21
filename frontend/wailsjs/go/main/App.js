@@ -14,6 +14,10 @@ export function GetLoginServers() {
   return window['go']['main']['App']['GetLoginServers']();
 }
 
+export function OpenAuthorPage() {
+  return window['go']['main']['App']['OpenAuthorPage']();
+}
+
 export function OpenGitHub() {
   return window['go']['main']['App']['OpenGitHub']();
 }

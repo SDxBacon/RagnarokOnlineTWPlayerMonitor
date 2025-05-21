@@ -241,6 +241,10 @@ func (a *App) OpenGitHub() {
 	runtime.BrowserOpenURL(a.ctx, "https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor")
 }
 
+func (a *App) OpenAuthorPage() {
+	runtime.BrowserOpenURL(a.ctx, "https://www.linkedin.com/in/renweiluo/")
+}
+
 // GetAppVersion returns the current version of the application, which is value of field `info.productVersion` in wails.json
 func (a *App) GetAppVersion() string {
 	return a.appVersion
