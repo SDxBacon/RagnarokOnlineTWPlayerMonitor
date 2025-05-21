@@ -2,6 +2,8 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
+	"log"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -12,13 +14,34 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed wails.json
+var wailsConfig []byte
+
+func getProductVersion() string {
+	var config WailsConfig
+	if err := json.Unmarshal(wailsConfig, &config); err != nil {
+		log.Printf("解析 wails.json 失败: %v", err)
+		return ""
+	}
+
+	return config.Info.ProductVersion
+}
+
+type WailsConfig struct {
+	Info struct {
+		ProductVersion string `json:"productVersion"`
+	} `json:"info"`
+}
+
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	app.appVersion = getProductVersion()
+
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:              "myproject",
+		Title:              "Ragnarok Online 在線人數監視器",
 		Width:              720,
 		Height:             330,
 		LogLevel:           logger.INFO,

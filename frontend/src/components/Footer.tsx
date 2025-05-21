@@ -9,6 +9,7 @@ import { LatestVersion } from "@/hooks/useCheckUpdateOnce";
 import GitHubIconWithNotification from "./GitHubIconWithNotification";
 
 import { OpenGitHub } from "../../wailsjs/go/main/App";
+import useAppVersion from "@/hooks/useAppVersion";
 
 interface FooterProps {
   isUpdateAvailable: boolean;
@@ -17,11 +18,19 @@ interface FooterProps {
 
 function Footer(props: FooterProps) {
   const { isUpdateAvailable, latestVersion } = props;
+
+  const currAppVersion = useAppVersion();
+
   return (
     <footer className="bg-muted px-6 py-3 border-t border-border">
       <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
-        {/* left - author information */}
-        <p>Created by Ren-Wei Luo</p>
+        {/* left - version / author information */}
+        <p>
+          Version: {currAppVersion} |{" "}
+          <a href="#" className="hover:text-[#0c77f2] hover:underline">
+            Created by Ren-Wei Luo
+          </a>
+        </p>
         {/* right - github icon with tooltip */}
         <TooltipProvider>
           <Tooltip>

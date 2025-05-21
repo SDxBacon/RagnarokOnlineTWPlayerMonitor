@@ -1,11 +1,14 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
   "name": "myproject",
-  "outputfilename": "myproject",
+  "outputfilename": "RO 人數監控",
   "frontend:install": "pnpm install",
   "frontend:build": "pnpm build",
   "frontend:dev:watcher": "pnpm dev",
   "frontend:dev:serverUrl": "auto",
+  "info": {
+    "productVersion": "3.0.0"
+  },
   "author": {
     "name": "SDxBacon",
     "email": "z141134553@gmail.com"

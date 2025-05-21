@@ -5,6 +5,8 @@ import {ragnarok} from '../models';
 
 export function CheckForUpdate():Promise<string>;
 
+export function GetAppVersion():Promise<string>;
+
 export function GetLoginServers():Promise<Array<config.LoginServer>>;
 
 export function OpenGitHub():Promise<void>;

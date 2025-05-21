@@ -20,6 +20,8 @@ type App struct {
 	services             AppServices
 	isCapturing          bool
 	packetCaptureService *network.PacketCaptureService
+
+	appVersion string
 }
 
 type AppServices struct {
@@ -114,8 +116,7 @@ func (a *App) buildConfigPath() string {
 // If there's no update or an error occurs during the check process, it returns an empty string.
 // Any errors encountered during the process are logged.
 func (a *App) CheckForUpdate() string {
-	// TODO:
-	currentVersion := "0.0.0"
+	currentVersion := a.appVersion
 
 	latestTag, err := a.services.github.GetLatestReleaseTag()
 	if err != nil {
@@ -238,4 +239,9 @@ func (a *App) StartCapture(targetServer string) []CharacterServerInfo {
 
 func (a *App) OpenGitHub() {
 	runtime.BrowserOpenURL(a.ctx, "https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor")
+}
+
+// GetAppVersion returns the current version of the application, which is value of field `info.productVersion` in wails.json
+func (a *App) GetAppVersion() string {
+	return a.appVersion
 }
