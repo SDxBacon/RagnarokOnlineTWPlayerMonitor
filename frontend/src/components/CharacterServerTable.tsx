@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { css } from "@emotion/react";
 
 import { ragnarok } from "../../wailsjs/go/models";
 
@@ -17,8 +18,8 @@ const CharacterServerTable = (props: CharacterServerTableProps) => {
   const { data } = props;
 
   return (
-    <Table className="bg-[var(--accent)] h-[225px]">
-      <TableHeader className="bg-[var(--chart-5)]">
+    <Table className="text-left">
+      <TableHeader className="bg-chart-4">
         <TableRow>
           <TableHead>Server</TableHead>
           <TableHead>Address</TableHead>
@@ -26,6 +27,16 @@ const CharacterServerTable = (props: CharacterServerTableProps) => {
         </TableRow>
       </TableHeader>
       <TableBody>
+        <TableRow className="hover:bg-primary">
+          <TableCell className="font-medium">Lorem</TableCell>
+          <TableCell>www.example.com:1234</TableCell>
+          <TableCell>1000</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Lorem</TableCell>
+          <TableCell>www.example.com:1234</TableCell>
+          <TableCell>1000</TableCell>
+        </TableRow>
         {data.map((item, index) => (
           <TableRow key={index}>
             <TableCell className="font-medium">{item.Name}</TableCell>

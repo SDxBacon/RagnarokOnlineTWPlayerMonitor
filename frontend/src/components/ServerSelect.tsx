@@ -15,22 +15,26 @@ interface ServerSelectProps {
 const ServerSelect = (props: ServerSelectProps) => {
   const { value, options } = props;
   return (
-    <Select
-      value={value?.Name}
-      // TODO: remove disabled in the future
-      disabled
-    >
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Please select a server" />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option.Name} value={option.Name}>
-            {option.Name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex flex-col gap-2">
+      <p className="text-left text-lg font-bold">Select Server</p>
+
+      <Select
+        value={value?.Name}
+        // TODO: remove disabled in the future
+        disabled
+      >
+        <SelectTrigger className="w-[180px] rounded-[8px]">
+          <SelectValue placeholder="Please select a server" />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.Name} value={option.Name}>
+              {option.Name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
 

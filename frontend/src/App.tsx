@@ -6,6 +6,7 @@ import ServerSelect from "@/components/ServerSelect";
 import CheckUpdateIcon from "./components/CheckUpdateIcon";
 import CharacterServerTable from "@/components/CharacterServerTable";
 import StartCaptureButton from "@/components/StartCaptureButton";
+import Footer from "@/components/Footer";
 // import wailjs api
 import { GetLoginServers, StartCapture } from "../wailsjs/go/main/App";
 import { config, ragnarok } from "../wailsjs/go/models";
@@ -58,25 +59,31 @@ function App() {
   }, []);
 
   return (
-    <div id="app" className="bg-background text-foreground px-4 py-2">
+    <div id="app" className="flex flex-col bg-background text-foreground">
       {/*  */}
-      <div className="flex items-center justify-end">
+      {/* <div className="flex items-center justify-end">
         <CheckUpdateIcon />
-      </div>
+      </div> */}
 
-      {/*  */}
-      <div className="flex p-4 gap-4">
-        <div className="flex flex-col gap-4 justify-end">
+      {/* Main Part */}
+      <div className="flex flex-1 p-4 gap-4 min-h-[225px] p-6">
+        {/* Left - server selector / capture button */}
+        <div className="flex flex-col gap-7 justify-end">
+          {/* 1. server select */}
           <ServerSelect value={selectedServer} options={servers} />
+          {/* 2. start capture */}
           <StartCaptureButton
+            className="rounded-[8px]"
             isLoading={isCapture}
             onClick={handleStartCaptureButtonClick}
           />
         </div>
+        {/* Right - server table */}
         <CharacterServerTable data={data} />
       </div>
 
-      {/*  */}
+      {/* Footer  */}
+      <Footer />
     </div>
   );
 }
