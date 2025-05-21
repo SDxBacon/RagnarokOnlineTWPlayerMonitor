@@ -21,6 +21,9 @@ function Footer(props: FooterProps) {
 
   const currAppVersion = useAppVersion();
 
+  // if no update is available, set open to false to prevent tooltip from showing
+  const open = !isUpdateAvailable ? false : undefined;
+
   return (
     <footer className="bg-muted px-6 py-3 border-t border-border">
       <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
@@ -37,7 +40,7 @@ function Footer(props: FooterProps) {
         </p>
         {/* right - github icon with tooltip */}
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip open={open}>
             <TooltipTrigger className="relative" onClick={OpenGitHub}>
               <a
                 className="hover:text-[#0c77f2] hover:underline flex items-center gap-1"
