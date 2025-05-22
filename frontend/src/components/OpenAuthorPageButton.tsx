@@ -21,7 +21,6 @@ function OpenAuthorPageButton(props: OpenAuthorPageButtonProps) {
           <a
             href="#"
             className="hover:text-[#0c77f2] hover:underline"
-            onClick={OpenAuthorPage}
           >
             {children}
           </a>
