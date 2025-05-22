@@ -16,7 +16,7 @@ This project is a player monitoring tool designed for Ragnarok Online. It captur
   
 ## Installation / 安裝說明
 
-1. 前往 [Releases](https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor/releases) 頁面。<br>Visit the [Releases](https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor/releases) page.
+1. 前往 [Releases](https://github.com/SDxBacon/RagnarokOnlinePlayerMonitor/releases) 頁面。<br>Visit the [Releases](https://github.com/SDxBacon/RagnarokOnlinePlayerMonitor/releases) page.
 2. 下載最新的 `.exe` 安裝檔案。<br>Download the latest `.exe` installer file.
 3. 下載並安裝最新的 **Npcap** 套件。<br>Download and install the latest **Npcap** package.
 
@@ -91,11 +91,11 @@ sequenceDiagram
 
 1. 複製專案 / Clone the repository:
    ```sh
-   git clone https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor.git
+   git clone https://github.com/SDxBacon/RagnarokOnlinePlayerMonitor.git
    ```
 2. 安裝依賴 / Install dependencies:
    ```sh
-   cd RagnarokOnlineTWPlayerMonitor/frontend
+   cd RagnarokOnlinePlayerMonitor/frontend
    pnpm install
    ```
 3. 啟動開發服務器 / Start development server:

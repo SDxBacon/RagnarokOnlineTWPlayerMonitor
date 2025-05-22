@@ -28,7 +28,7 @@ func NewGitHubService(ctx context.Context) *GitHubService {
 		ctx: ctx,
 		// FIXME: should read from wails.json in the future
 		owner: "SDxBacon",
-		repo:  "RagnarokOnlineTWPlayerMonitor",
+		repo:  "RagnarokOnlinePlayerMonitor",
 	}
 }
 

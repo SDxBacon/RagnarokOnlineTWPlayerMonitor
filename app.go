@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"ro-server-player-monitor/go/config"
 	"ro-server-player-monitor/go/github"
 	"ro-server-player-monitor/go/network"
 	"ro-server-player-monitor/go/ragnarok"
-	"os"
-	"path/filepath"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -238,7 +238,7 @@ func (a *App) StartCapture(targetServer string) []CharacterServerInfo {
 }
 
 func (a *App) OpenGitHub() {
-	runtime.BrowserOpenURL(a.ctx, "https://github.com/SDxBacon/RagnarokOnlineTWPlayerMonitor")
+	runtime.BrowserOpenURL(a.ctx, "https://github.com/SDxBacon/RagnarokOnlinePlayerMonitor")
 }
 
 func (a *App) OpenAuthorPage() {
