@@ -64,7 +64,7 @@ func LoadCustomServersFromXML(path string) ([]LoginServer, error) {
 	}
 
 	// check if the App.Name matches
-	if config.App.Name != "myproject" {
+	if config.App.Name != "ro-server-player-monitor" {
 		// not match, ignore the config
 		return nil, nil
 	}

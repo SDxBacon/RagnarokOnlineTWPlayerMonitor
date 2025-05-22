@@ -1,6 +1,6 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "myproject",
+  "name": "ro-server-player-monitor",
   "outputfilename": "RO 人數監控",
   "frontend:install": "pnpm install",
   "frontend:build": "pnpm build",

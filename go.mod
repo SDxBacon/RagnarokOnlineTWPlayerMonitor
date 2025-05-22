@@ -1,4 +1,4 @@
-module myproject
+module ro-server-player-monitor
 
 go 1.23.0
 

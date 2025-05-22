@@ -1,6 +1,6 @@
 <configuration>
   <app>
-    <name>myproject</name>
+    <name>ro-server-player-monitor</name>
   </app>
   <servers>
       <server>
