@@ -57,7 +57,10 @@ function App() {
   });
 
   return (
-    <div id="app" className="flex flex-col bg-background text-foreground">
+    <div
+      id="app"
+      className="flex flex-col bg-background text-foreground select-none"
+    >
       {/*  */}
       {/* <div className="flex items-center justify-end">
         <CheckUpdateIcon />
