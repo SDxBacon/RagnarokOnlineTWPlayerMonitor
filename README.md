@@ -108,14 +108,28 @@ sequenceDiagram
    ```
 
 ## FAQ / 常見問題
-Q: 應用程式需要網路權限嗎？  
-A: 是的，本應用需要網路權限才能監控伺服器狀態。  
-
 Q: 這個工具會影響我的遊戲體驗嗎？  
-A: 不會。此工具只會被動監控網路流量，不會干擾遊戲運行或修改任何遊戲檔案。  
+A: 不會。此工具只會被動監控網路流量，不會干擾遊戲運行或修改任何遊戲檔案。
 
-Q: Does the application require network permissions?  
-A: Yes, the application requires network permissions to monitor server status.  
+Q: 這個工具會不會偷記錄我的網路封包？  
+A: 不會。這個工具不會記錄、上傳或分析你的任何網路封包內容。
+  如果還是不放心，也可以到 GitHub 下載完整原始碼，自行檢查並編譯，整個流程完全公開透明。
+
+Q: 如何用在除了台灣以外的其它伺服器？  
+A: 你可以打開 config.xml，自行修改伺服器資訊，只要 <name> 欄位維持是 Taiwan 就不會影響功能。  
+不過要注意兩件事：
+- 伺服器名稱的編碼問題：不同國家的 RO 伺服器名稱，通常會用各自常見的編碼格式。例如：twRO 是 Big5，kRO 則是 EUC-KR。目前這個程式預設是用 Big5 解碼伺服器名稱的，所以顯示上可能會有亂碼。
+- 伺服器人數未必是數字：像是 kRO 現在就不回傳實際人數了，而是改用類似「順暢」、「壅塞」這種文字描述，這種情況下顯示的就不會是數字了。
 
 Q: Will this tool affect my gameplay experience?  
-A: No, this tool only passively monitors network traffic. It does not interfere with gameplay or modify any game files.
+A: No. This tool only passively monitors network traffic. It does not interfere with the game or modify any game files.
+
+Q: Does this tool secretly record my network packets?  
+A: No. This tool does not record, upload, or analyze any of your network packet contents.
+If you're still concerned, you can download the full source code from GitHub, review it yourself, and compile it locally. The entire process is fully open and transparent.
+
+Q: How can I use this tool with servers outside of Taiwan?  
+A: You can open config.xml and modify the server information manually. As long as the <name> field is set to "Taiwan", the functionality will remain unaffected.
+However, please note two important things:
+- Server name encoding issues: RO servers in different countries typically use different character encodings. For example, twRO uses Big5, while kRO uses EUC-KR. This tool currently assumes Big5 encoding when decoding server names, so names from other regions may display incorrectly.
+- Server population may not be numeric: Some servers (like kRO) no longer return actual player counts. Instead, they use descriptions like "Smooth" or "Crowded". In such cases, the tool will not display a numeric value.
