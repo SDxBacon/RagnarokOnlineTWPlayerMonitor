@@ -4,12 +4,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useAppVersion from "@/hooks/useAppVersion";
 import { LatestVersion } from "@/hooks/useCheckUpdateOnce";
 
+import OpenAuthorPageButton from "./OpenAuthorPageButton";
 import GitHubIconWithNotification from "./GitHubIconWithNotification";
 
 import { OpenGitHub, OpenAuthorPage } from "../../wailsjs/go/main/App";
-import useAppVersion from "@/hooks/useAppVersion";
 
 interface FooterProps {
   isUpdateAvailable: boolean;
@@ -30,13 +31,7 @@ function Footer(props: FooterProps) {
         {/* left - version / author information */}
         <p>
           {`Version: ${currAppVersion} | `}
-          <a
-            href="#"
-            className="hover:text-[#0c77f2] hover:underline"
-            onClick={OpenAuthorPage}
-          >
-            Created by Ren-Wei Luo
-          </a>
+          <OpenAuthorPageButton>Created by Ren-Wei Luo</OpenAuthorPageButton>
         </p>
         {/* right - github icon with tooltip */}
         <TooltipProvider>
