@@ -67,7 +67,7 @@ function App() {
       </div> */}
 
       {/* Main Part */}
-      <div className="flex flex-1 p-4 gap-4 min-h-[225px] p-6">
+      <div className="flex flex-1 gap-4 min-h-[225px] p-6 pt-8">
         {/* Left - server selector / capture button */}
         <div className="flex flex-col gap-7 justify-end">
           {/* 1. server select */}

@@ -43,7 +43,7 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:              "Ragnarok Online 在線人數監視器",
 		Width:              720,
-		Height:             330,
+		Height:             338,
 		LogLevel:           logger.INFO,
 		LogLevelProduction: logger.ERROR,
 		AssetServer: &assetserver.Options{
