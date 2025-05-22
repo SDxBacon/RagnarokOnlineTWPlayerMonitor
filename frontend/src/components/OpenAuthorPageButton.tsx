@@ -26,7 +26,7 @@ function OpenAuthorPageButton(props: OpenAuthorPageButtonProps) {
           </a>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="text-lg">Open the author's LinkedIn page</p>
+          <p className="text-md">Open the author's LinkedIn page</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
