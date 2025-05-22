@@ -17,7 +17,7 @@ const CharacterServerTable = (props: CharacterServerTableProps) => {
   const { data } = props;
 
   return (
-    <Table className="text-left">
+    <Table className="text-left select-auto">
       <TableHeader className="bg-chart-4">
         <TableRow>
           <TableHead>Server</TableHead>
