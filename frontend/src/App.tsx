@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import isEmpty from "lodash/isEmpty";
 import { useState } from "react";
 import { useEffectOnce } from "react-use";
@@ -21,8 +22,11 @@ function App() {
 
   const [isCapture, setIsCapture] = useState(false);
   const [data, setData] = useState<ragnarok.CharacterServerInfo[]>([]);
+  const [updatedTime, setUpdatedTime] = useState(Date.now());
 
   const [isUpdateAvailable, latestVersion] = useCheckUpdateOnce();
+
+  const showUpdateTimeText = !isEmpty(data);
 
   const handleStartCaptureButtonClick = () => {
     if (selectedServer === null) return;
@@ -41,6 +45,10 @@ function App() {
       .catch((error) => {
         console.error("Error starting capture:", error);
         setIsCapture(false);
+      })
+      .finally(() => {
+        // update the timestamp no matter if the capture is successful or not
+        setUpdatedTime(Date.now());
       });
   };
 
@@ -61,13 +69,8 @@ function App() {
       id="app"
       className="flex flex-col bg-background text-foreground select-none"
     >
-      {/*  */}
-      {/* <div className="flex items-center justify-end">
-        <CheckUpdateIcon />
-      </div> */}
-
       {/* Main Part */}
-      <div className="flex flex-1 gap-4 min-h-[225px] p-6 pt-8">
+      <div className="relative flex flex-1 gap-4 min-h-[225px] p-6 pt-8">
         {/* Left - server selector / capture button */}
         <div className="flex flex-col gap-7 justify-end">
           {/* 1. server select */}
@@ -81,6 +84,15 @@ function App() {
         </div>
         {/* Right - server table */}
         <CharacterServerTable data={data} />
+
+        {/* Update time */}
+        {showUpdateTimeText && (
+          <span className="absolute right-7 bottom-1 text-muted-foreground italic text-sm">
+            {`Updated: ${dayjs(updatedTime).format(
+              "YYYY/MM/DD HH:mm:ss [(GMT]Z[)]"
+            )}`}
+          </span>
+        )}
       </div>
 
       {/* Footer  */}
