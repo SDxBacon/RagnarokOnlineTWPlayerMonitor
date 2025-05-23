@@ -1,6 +1,6 @@
 # Ragnarok Online Player Monitor / Ragnarok Online 在線人數監視器
 
-![動畫3](https://github.com/user-attachments/assets/fa641bca-45a9-41ab-8be2-fa367a7a17a6)
+![301](https://github.com/user-attachments/assets/5f10b3ae-c8cc-40b3-92c8-6e231648e8bc)
 
 
 ## Overview / 專案概述
